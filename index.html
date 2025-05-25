@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Scripts -->
+    <script src="https://kit.fontawesome.com/8eadf802c0.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <title>My Personal Anime Tracker</title>
+    <style>
+        :root {
+            --primary: #6a5acd;
+            --primary-dark: #483d8b;
+            --secondary: #ff7f50;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #fd7e14;
+            --info: #17a2b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stat:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        select, button {
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: none;
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select {
+            background-color: white;
+            color: var(--dark);
+            border: 1px solid #ddd;
+            min-width: 200px;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        #animeChart {
+            width: 100%;
+            height: 400px;
+        }
+
+        .anime-list {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .anime-list h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-completed {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .badge-watching {
+            background-color: var(--info);
+            color: white;
+        }
+
+        .badge-plan {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .badge-dropped {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .anime-cover {
+            width: 60px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .anime-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .monthly-completed {
+            margin-top: 30px;
+        }
+
+        .month-section {
+            margin-bottom: 30px;
+        }
+
+        .month-header {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid var(--primary);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .month-header:hover {
+            color: var(--primary);
+        }
+
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .anime-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .anime-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .anime-card-img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+        }
+
+        .anime-card-info {
+            padding: 12px;
+        }
+
+        .anime-card-title {
+            font-weight: 550;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .anime-card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 50px;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: modalFadeIn 0.3s ease-out;
+            margin-bottom: 50px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .search-results {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .search-result-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        .search-result-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .search-result-item img {
+            width: 40px;
+            height: 60px;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+
+        .search-loading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .genre-tag {
+            display: inline-block;
+            background-color: #e0e0e0;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .edit-btn, .delete-btn {
+            position: absolute;
+            top: 5px;
+            padding: 3px 6px;
+            border: none;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .edit-btn {
+            left: 5px;
+            background-color: var(--info);
+            color: white;
+        }
+
+        .delete-btn {
+            right: 5px;
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .anime-card:hover .edit-btn, 
+        .anime-card:hover .delete-btn {
+            opacity: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            select, button {
+                width: 100%;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+                font-size: 0.9rem;
+            }
+
+            .anime-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .anime-card-img {
+                height: 200px;
+            }
+
+            .modal {
+                padding-top: 20px;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .anime-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+
+            .anime-card-img {
+                height: 160px;
+            }
+        }
+
+        /* Loading animation */
+        .loader {
+            display: none;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-responsive table {
+            min-width: 600px; /* Ensures scrolling on small screens */
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            html {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            html {
+                font-size: 13px;
+            }
+        }
+
+        .import-export {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+            }
+
+            .import-export button {
+                flex: 1 1 auto;
+                min-width: 120px;
+            }
+
+            /* On small screens, stack buttons vertically */
+            @media (max-width: 480px) {
+                .import-export {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .import-export button {
+                    width: 100%;
+                }
+            }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>My Anime Tracker</h1>
+            <p class="subtitle">Personal progress and statistics</p>
+        </header>
+
+        <div class="controls">
+            <div>
+                <label for="yearSelect">Select Year: </label>
+                <select id="yearSelect">
+                    <option value="all">All Time</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                    <option value="2029">2029</option>
+                    <option value="2030">2030</option>
+                </select>
+            </div>
+            <div>
+                <label for="monthSelect">Select Month: </label>
+                <select id="monthSelect">
+                    <option value="all">All Months</option>
+                    <option value="01">January</option>
+                    <option value="02">February</option>
+                    <option value="03">March</option>
+                    <option value="04">April</option>
+                    <option value="05">May</option>
+                    <option value="06">June</option>
+                    <option value="07">July</option>
+                    <option value="08">August</option>
+                    <option value="09">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+            </div>
+            <button id="addAnimeBtn"><i class="fa fa-plus"></i> Add Anime</button>
+        
+        <div class="import-export">
+    <button onclick="exportData()"><i class="fa fa-download" aria-hidden="true"></i> Export</button>
+
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+
+    <button onclick="document.getElementById('importFile').click()"><i class="fa fa-upload" aria-hidden="true"></i> Import</button>
+</div>
+
+        </div>
+
+        
+
+        <div class="loader" id="loader"></div>
+
+        <div class="dashboard">
+            <div class="card">
+                <h2> <i class="fa fa-line-chart" aria-hidden="true"></i> Summary</h2>
+                <div class="stat">
+                    <span class="stat-label">Completed:</span>
+                    <span class="stat-value" id="animeCompleted">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Total Movies:</span>
+                    <span class="stat-value" id="moviesWatched">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Total Episodes:</span>
+                    <span class="stat-value" id="episodesWatched">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Hours Watched:</span>
+                    <span class="stat-value" id="hoursWatched">0</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2> <i class="fa fa-heart" aria-hidden="true"></i> Top Genres</h2>
+                <div id="topGenres">
+                    <!-- Will be auto-populated -->
+                    <div class="genre-tag">Loading...</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2> <i class="fa fa-tasks" aria-hidden="true"></i> Recent Activity</h2>
+                <div id="recentActivity">
+                    <!-- Will be auto-populated -->
+                    <div class="stat">
+                        <span class="stat-label">Loading...</span>
+                        <span class="stat-value"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h2> <i class="fa fa-bar-chart" aria-hidden="true"></i> Monthly Progress</h2>
+            <canvas id="animeChart"></canvas>
+        </div>
+
+        <div class="anime-list">
+            <h2> <i class="fa fa-list-ul" aria-hidden="true"></i> Anime List</h2>
+             <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Progress</th>
+                        <th>Status</th>
+                        <th>Score</th>
+                        <th>Completed</th>
+                    </tr>
+                </thead>
+                <tbody id="animeTableBody">
+                    <!-- Anime entries will be added here dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+        <div class="monthly-completed" id="monthlyCompleted">
+            <!-- Monthly completed anime will be added here -->
+        </div>
+    </div>
+
+    <!-- Add Anime Modal -->
+    <div class="modal" id="addAnimeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Anime</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="animeForm">
+                <input type="hidden" id="animeId">
+                <div class="form-group">
+                    <label for="animeTitle">Title</label>
+                    <input type="text" id="animeTitle" required>
+                    <div class="search-loading" id="searchLoading">Searching...</div>
+                    <div class="search-results" id="searchResults"></div>
+                </div>
+                <div class="form-group">
+                    <label for="animeType">Type</label>
+                    <select id="animeType" required>
+                        <option value="TV">TV Series</option>
+                        <option value="Movie">Movie</option>
+                        <option value="OVA">OVA</option>
+                        <option value="ONA">ONA</option>
+                        <option value="Special">Special</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="animeEpisodes">Total Episodes</label>
+                    <input type="number" id="animeEpisodes" value="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Duration per Episode</label>
+                    <input type="text" value="20 minutes" disabled>
+                    <small>Fixed at 20 minutes for all anime</small>
+                </div>
+                <div class="form-group">
+                    <label for="animeStatus">Status</label>
+                    <select id="animeStatus" required>
+                        <option value="Completed">Completed</option>
+                        <option value="Watching">Watching</option>
+                        <option value="Plan to Watch">Plan to Watch</option>
+                        <option value="Dropped">Dropped</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="animeProgress">Episode</label>
+                    <input type="number" id="animeProgress" min="0" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="animeScore">Score (0-10)</label>
+                    <input type="number" id="animeScore" min="0" max="10" step="0.1" placeholder="7.5">
+                </div>
+                <div class="form-group">
+                    <label for="animeYear">Completion Year</label>
+                    <select id="animeYear">
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                        <option value="2030">2030</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="animeMonth">Completion Month</label>
+                    <select id="animeMonth">
+                        <option value="01">January</option>
+                        <option value="02">February</option>
+                        <option value="03">March</option>
+                        <option value="04">April</option>
+                        <option value="05">May</option>
+                        <option value="06">June</option>
+                        <option value="07">July</option>
+                        <option value="08">August</option>
+                        <option value="09">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="animeCover">Cover Image</label>
+                    <input type="text" id="animeCover" placeholder="Will be auto-filled from search" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="animeGenres">Genres</label>
+                    <input type="text" id="animeGenres" placeholder="Will be auto-filled from search" readonly>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Add Anime</button>
+                    <button type="button" class="btn btn-danger" id="deleteBtn" style="display: none;">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+
+// Initialize with empty data
+let animeData = JSON.parse(localStorage.getItem('animeData')) || [];
+let isEditing = false;
+let currentEditId = null;
+
+// DOM elements
+const yearSelect = document.getElementById('yearSelect');
+const monthSelect = document.getElementById('monthSelect');
+const addAnimeBtn = document.getElementById('addAnimeBtn');
+const animeTableBody = document.getElementById('animeTableBody');
+const monthlyCompleted = document.getElementById('monthlyCompleted');
+const loader = document.getElementById('loader');
+const addAnimeModal = document.getElementById('addAnimeModal');
+const animeForm = document.getElementById('animeForm');
+const closeModalBtns = document.querySelectorAll('.close-modal');
+const animeTitleInput = document.getElementById('animeTitle');
+const searchResults = document.getElementById('searchResults');
+const searchLoading = document.getElementById('searchLoading');
+const animeCoverInput = document.getElementById('animeCover');
+const animeGenresInput = document.getElementById('animeGenres');
+const topGenresContainer = document.getElementById('topGenres');
+const recentActivityContainer = document.getElementById('recentActivity');
+const submitBtn = document.getElementById('submitBtn');
+const deleteBtn = document.getElementById('deleteBtn');
+const animeIdInput = document.getElementById('animeId');
+
+// Stats elements
+const animeCompletedEl = document.getElementById('animeCompleted');
+const moviesWatchedEl = document.getElementById('moviesWatched');
+const episodesWatchedEl = document.getElementById('episodesWatched');
+const hoursWatchedEl = document.getElementById('hoursWatched');
+
+// Chart variables
+let animeChart;
+
+// Initialize the app
+document.addEventListener('DOMContentLoaded', function() {
+    renderAnimeList();
+    updateStats();
+    initChart();
+    renderMonthlyCompleted();
+    updateTopGenres();
+    updateRecentActivity();
+    
+    // Add event listeners
+    yearSelect.addEventListener('change', handleFilterChange);
+    monthSelect.addEventListener('change', handleFilterChange);
+    addAnimeBtn.addEventListener('click', () => {
+        isEditing = false;
+        currentEditId = null;
+        animeForm.reset();
+        submitBtn.textContent = 'Add Anime';
+        deleteBtn.style.display = 'none';
+        animeIdInput.value = '';
+        addAnimeModal.style.display = 'flex';
+    });
+    
+    closeModalBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            addAnimeModal.style.display = 'none';
+        });
+    });
+    
+    animeForm.addEventListener('submit', handleAddAnime);
+    
+    // Close modal when clicking outside
+    addAnimeModal.addEventListener('click', (e) => {
+        if (e.target === addAnimeModal) {
+            addAnimeModal.style.display = 'none';
+        }
+    });
+
+    // Search for anime when typing
+    animeTitleInput.addEventListener('input', searchAnime);
+
+    // Delete button handler
+    deleteBtn.addEventListener('click', deleteAnime);
+});
+
+// Search anime using Jikan API
+async function searchAnime() {
+    const query = animeTitleInput.value.trim();
+    if (query.length < 3) {
+        searchResults.style.display = 'none';
+        return;
+    }
+
+    searchLoading.style.display = 'block';
+    searchResults.style.display = 'none';
+
+    try {
+        const response = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=5`);
+        const data = await response.json();
+        
+        searchResults.innerHTML = '';
+        if (data.data && data.data.length > 0) {
+            data.data.forEach(anime => {
+                const item = document.createElement('div');
+                item.className = 'search-result-item';
+                item.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <img src="${anime.images?.jpg?.image_url || 'https://via.placeholder.com/40x60?text=No+Image'}" alt="${anime.title}">
+                        <div>
+                            <div style="font-weight: 600;">${anime.title}</div>
+                            <small>${anime.type} • ${anime.episodes || '?'} eps • Score: ${anime.score || 'N/A'}</small>
+                        </div>
+                    </div>
+                `;
+                item.addEventListener('click', () => {
+                    selectAnimeFromSearch(anime);
+                });
+                searchResults.appendChild(item);
+            });
+            searchResults.style.display = 'block';
+        } else {
+            searchResults.innerHTML = '<div style="padding: 10px; text-align: center;">No results found</div>';
+            searchResults.style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Error searching anime:', error);
+        searchResults.innerHTML = '<div style="padding: 10px; text-align: center;">Error loading results</div>';
+        searchResults.style.display = 'block';
+    } finally {
+        searchLoading.style.display = 'none';
+    }
+}
+
+// Select anime from search results
+function selectAnimeFromSearch(anime) {
+    const englishTitle = anime.title_english || anime.title;
+    animeTitleInput.value = englishTitle;
+    document.getElementById('animeType').value = anime.type || 'TV';
+    document.getElementById('animeEpisodes').value = anime.episodes || 1;
+    animeCoverInput.value = anime.images?.jpg?.image_url || '';
+    
+    const unwantedGenres = ['Award Winning'];
+    const genres = anime.genres 
+        ? anime.genres
+            .filter(g => !unwantedGenres.includes(g.name))
+            .map(g => g.name)
+            .join(', ')
+        : '';
+        
+    animeGenresInput.value = genres;
+    document.getElementById('animeScore').value = anime.score || '';
+    searchResults.style.display = 'none';
+}
+
+// Handle filter changes
+function handleFilterChange() {
+    showLoader();
+    setTimeout(() => {
+        renderAnimeList();
+        updateStats();
+        updateChart();
+        renderMonthlyCompleted();
+        updateTopGenres();
+        updateRecentActivity();
+        hideLoader();
+    }, 500);
+}
+
+// Show loading animation
+function showLoader() {
+    loader.style.display = 'block';
+}
+
+// Hide loading animation
+function hideLoader() {
+    loader.style.display = 'none';
+}
+
+// Render anime list based on filters
+function renderAnimeList() {
+    const year = yearSelect.value;
+    const month = monthSelect.value;
+    
+    animeTableBody.innerHTML = '';
+    
+    const filteredAnime = animeData.filter(anime => {
+        if (year === 'all' && month === 'all') return true;
+        if (year === 'all') return true;
+        
+        if (!anime.finishDate) return false;
+        
+        const finishDate = new Date(anime.finishDate);
+        const finishYear = finishDate.getFullYear().toString();
+        const finishMonth = (finishDate.getMonth() + 1).toString().padStart(2, '0');
+        
+        if (year !== 'all' && finishYear !== year) return false;
+        if (month !== 'all' && finishMonth !== month) return false;
+        
+        return true;
+    });
+    
+    if (filteredAnime.length === 0) {
+        animeTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No anime found for the selected period</td></tr>';
+        return;
+    }
+    
+    filteredAnime.forEach(anime => {
+        const row = document.createElement('tr');
+        
+        // Status badge
+        let statusBadge = '';
+        switch(anime.userStatus) {
+            case 'Completed':
+                statusBadge = '<span class="badge badge-completed">Completed</span>';
+                break;
+            case 'Watching':
+                statusBadge = '<span class="badge badge-watching">Watching</span>';
+                break;
+            case 'Plan to Watch':
+                statusBadge = '<span class="badge badge-plan">Plan to Watch</span>';
+                break;
+            case 'Dropped':
+                statusBadge = '<span class="badge badge-dropped">Dropped</span>';
+                break;
+        }
+        
+        // Progress bar
+        const progressPercentage = anime.episodes > 0 ? Math.round((anime.progress / anime.episodes) * 100) : 0;
+        const progressBar = `
+            <div style="background: #eee; border-radius: 5px; height: 10px; width: 100%;">
+                <div style="background: var(--primary); width: ${progressPercentage}%; height: 100%; border-radius: 5px;"></div>
+            </div>
+            <small>${anime.progress}/${anime.episodes} (${progressPercentage}%)</small>
+        `;
+        
+        // Score display
+        const scoreDisplay = anime.score ? anime.score.toFixed(1) : '-';
+        
+        // Completion date (month/year only)
+        let completionDate = '-';
+        if (anime.finishDate) {
+            const date = new Date(anime.finishDate);
+            completionDate = date.toLocaleString('default', { month: 'short' }) + ' ' + date.getFullYear();
+        }
+        
+        // Title with cover image
+        const titleWithCover = `
+            <div class="anime-title">
+                <img src="${anime.cover}" alt="${anime.title}" class="anime-cover">
+                ${anime.title}
+            </div>
+        `;
+        
+        row.innerHTML = `
+            <td>${titleWithCover}</td>
+            <td>${anime.type}</td>
+            <td>${progressBar}</td>
+            <td>${statusBadge}</td>
+            <td>${scoreDisplay}</td>
+            <td>${completionDate}</td>
+        `;
+        
+        // Add click event to edit
+        row.addEventListener('click', () => {
+            editAnime(anime.id);
+        });
+        
+        animeTableBody.appendChild(row);
+    });
+}
+
+// Update statistics
+function updateStats() {
+    const year = yearSelect.value;
+    const month = monthSelect.value;
+    
+    let filteredAnime = animeData.filter(anime => {
+        if (year === 'all' && month === 'all') return anime.userStatus === 'Completed';
+        if (year === 'all') return anime.userStatus === 'Completed';
+        
+        if (!anime.finishDate || anime.userStatus !== 'Completed') return false;
+        
+        const finishDate = new Date(anime.finishDate);
+        const finishYear = finishDate.getFullYear().toString();
+        const finishMonth = (finishDate.getMonth() + 1).toString().padStart(2, '0');
+        
+        if (year !== 'all' && finishYear !== year) return false;
+        if (month !== 'all' && finishMonth !== month) return false;
+        
+        return true;
+    });
+    
+    // Calculate stats
+    const completedAnime = filteredAnime.length;
+    const completedMovies = filteredAnime.filter(anime => anime.type === 'Movie').length;
+    const totalEpisodes = filteredAnime.reduce((sum, anime) => sum + anime.episodes, 0);
+    const totalMinutes = filteredAnime.reduce((sum, anime) => sum + (anime.episodes * 20), 0);
+    const totalHours = (totalMinutes / 60).toFixed(1);
+    
+    // Update DOM
+    animeCompletedEl.textContent = completedAnime;
+    moviesWatchedEl.textContent = completedMovies;
+    episodesWatchedEl.textContent = totalEpisodes;
+    hoursWatchedEl.textContent = totalHours;
+}
+
+// Update top genres based on current filters
+function updateTopGenres() {
+    const year = yearSelect.value;
+    const month = monthSelect.value;
+    
+    const genreCounts = {};
+    
+    animeData.forEach(anime => {
+        if (!anime.genres || anime.genres.length === 0 || anime.userStatus !== 'Completed') return;
+        
+        if (year !== 'all') {
+            if (!anime.finishDate) return;
+            const finishDate = new Date(anime.finishDate);
+            const finishYear = finishDate.getFullYear().toString();
+            if (finishYear !== year) return;
+            
+            if (month !== 'all') {
+                const finishMonth = (finishDate.getMonth() + 1).toString().padStart(2, '0');
+                if (finishMonth !== month) return;
+            }
+        }
+        
+        anime.genres.forEach(genre => {
+            if (genre) {
+                genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+            }
+        });
+    });
+    
+    const sortedGenres = Object.entries(genreCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 4);
+    
+    topGenresContainer.innerHTML = '';
+    
+    if (sortedGenres.length > 0) {
+        sortedGenres.forEach(([genre, count]) => {
+            const genreElement = document.createElement('div');
+            genreElement.className = 'stat';
+            genreElement.innerHTML = `
+                <span class="stat-label">${genre}:</span>
+                <span class="stat-value">${count}</span>
+            `;
+            topGenresContainer.appendChild(genreElement);
+        });
+    } else {
+        topGenresContainer.innerHTML = '<div style="padding: 10px; text-align: center;">No genre data available</div>';
+    }
+}
+
+// Update recent activity with first and last anime added
+function updateRecentActivity() {
+    const year = yearSelect.value;
+    const month = monthSelect.value;
+    
+    recentActivityContainer.innerHTML = '';
+    
+    let filteredAnime = animeData;
+    if (year !== 'all') {
+        filteredAnime = animeData.filter(anime => {
+            if (!anime.finishDate) return false;
+            const finishDate = new Date(anime.finishDate);
+            const finishYear = finishDate.getFullYear().toString();
+            if (finishYear !== year) return false;
+            
+            if (month !== 'all') {
+                const finishMonth = (finishDate.getMonth() + 1).toString().padStart(2, '0');
+                if (finishMonth !== month) return false;
+            }
+            return true;
+        });
+    }
+    
+    // Sort by when they were added to the tracker (using id as proxy)
+    const sortedAnime = [...filteredAnime].sort((a, b) => a.id - b.id);
+    
+    const firstAnime = sortedAnime.length > 0 ? sortedAnime[0].title : 'None';
+    const lastAnime = sortedAnime.length > 0 ? sortedAnime[sortedAnime.length - 1].title : 'None';
+    
+    // Calculate average score
+    const scoredAnime = filteredAnime.filter(a => a.score);
+    const averageScore = scoredAnime.length > 0 
+        ? (scoredAnime.reduce((sum, a) => sum + a.score, 0) / scoredAnime.length).toFixed(1)
+        : 'N/A';
+    
+    // Calculate total hours watched
+    const totalHours = filteredAnime
+        .filter(a => a.userStatus === 'Completed')
+        .reduce((sum, a) => sum + (a.episodes * 20 / 60), 0)
+        .toFixed(1);
+
+        // Find longest anime (by episodes) in filtered range
+let longestAnime = null;
+filteredAnime.forEach(anime => {
+    if (anime.userStatus === 'Completed' && anime.episodes) {
+        if (!longestAnime || anime.episodes > longestAnime.episodes) {
+            longestAnime = anime;
+        }
+    }
+});
+const longest = longestAnime ? `${longestAnime.title.length > 14 ? longestAnime.title.slice(0, 14) + '...' : longestAnime.title} (${longestAnime.episodes} eps)`: 'N/A';
+ 
+
+    
+    recentActivityContainer.innerHTML = `
+        <div class="stat">
+            <span class="stat-label">First:</span>
+            <span class="stat-value">${firstAnime}</span>
+        </div>
+        <div class="stat">
+            <span class="stat-label">Last:</span>
+            <span class="stat-value">${lastAnime}</span>
+        </div>
+        <div class="stat">
+            <span class="stat-label">Avg Score:</span>
+            <span class="stat-value">${averageScore}</span>
+        </div>
+        <div class="stat">
+             <span class="stat-label">Longest Anime:</span>
+             <span class="stat-value">${longest}</span>
+        </div>
+    `;
+}
+
+// Initialize chart
+function initChart() {
+    const ctx = document.getElementById('animeChart').getContext('2d');
+    
+    const monthlyData = calculateMonthlyData();
+    
+    animeChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+                label: 'Anime Completed',
+                data: monthlyData.animeCounts,
+                backgroundColor: 'rgba(106, 90, 205, 0.7)',
+                borderColor: 'rgba(106, 90, 205, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Hours Watched',
+                data: monthlyData.hoursWatched,
+                backgroundColor: 'rgba(255, 127, 80, 0.7)',
+                borderColor: 'rgba(255, 127, 80, 1)',
+                borderWidth: 1,
+                type: 'line',
+                yAxisID: 'y1'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Anime Watching Activity'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.datasetIndex === 0) {
+                                label += context.raw + ' anime';
+                            } else {
+                                label += context.raw + ' hours';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Anime Completed'
+                    }
+                },
+                y1: {
+                    position: 'right',
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Hours Watched'
+                    },
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeOutQuart'
+            }
+        }
+    });
+}
+
+// Calculate monthly data for chart
+function calculateMonthlyData() {
+    const year = yearSelect.value;
+    const animeCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    const hoursWatched = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    
+    animeData.forEach(anime => {
+        if (anime.userStatus === 'Completed' && anime.finishDate) {
+            const finishDate = new Date(anime.finishDate);
+            const finishYear = finishDate.getFullYear().toString();
+            const month = finishDate.getMonth();
+            
+            if (year === 'all' || finishYear === year) {
+                animeCounts[month]++;
+                hoursWatched[month] += (anime.episodes * 20) / 60;
+            }
+        }
+    });
+    
+    return {
+        animeCounts: animeCounts,
+        hoursWatched: hoursWatched.map(h => parseFloat(h.toFixed(1)))
+    };
+}
+
+// Update chart based on filters
+function updateChart() {
+    const year = yearSelect.value;
+    
+    if (year === 'all') {
+        animeChart.data.labels = ['2024', '2025', '2026', '2027', '2028', '2029', '2030'];
+        
+        const yearlyData = calculateYearlyData();
+        animeChart.data.datasets[0].data = yearlyData.animeCounts;
+        animeChart.data.datasets[1].data = yearlyData.hoursWatched;
+    } else {
+        animeChart.data.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        
+        const monthlyData = calculateMonthlyData();
+        animeChart.data.datasets[0].data = monthlyData.animeCounts;
+        animeChart.data.datasets[1].data = monthlyData.hoursWatched;
+    }
+    
+    animeChart.update();
+}
+
+// Calculate yearly data for chart
+function calculateYearlyData() {
+    const years = ['2024', '2025', '2026', '2027', '2028', '2029', '2030'];
+    const animeCounts = [0, 0, 0, 0, 0, 0, 0];
+    const hoursWatched = [0, 0, 0, 0, 0, 0, 0];
+    
+    animeData.forEach(anime => {
+        if (anime.userStatus === 'Completed' && anime.finishDate) {
+            const finishDate = new Date(anime.finishDate);
+            const finishYear = finishDate.getFullYear().toString();
+            const yearIndex = years.indexOf(finishYear);
+            
+            if (yearIndex !== -1) {
+                animeCounts[yearIndex]++;
+                hoursWatched[yearIndex] += (anime.episodes * 20) / 60;
+            }
+        }
+    });
+    
+    return {
+        animeCounts: animeCounts,
+        hoursWatched: hoursWatched.map(h => parseFloat(h.toFixed(1)))
+    };
+}
+
+// Render monthly completed anime with covers
+function renderMonthlyCompleted() {
+    const year = yearSelect.value;
+    const month = monthSelect.value;
+    
+    monthlyCompleted.innerHTML = '';
+    
+    // Clear the section if "All Months" is selected
+    if (month === 'all') {
+        monthlyCompleted.innerHTML = '<h2>Anime by Year</h2>';
+        
+        const years = ['2024', '2025', '2026', '2027', '2028', '2029', '2030'];
+        years.forEach(currentYear => {
+            if (year !== 'all' && currentYear !== year) return;
+            
+            const completedAnime = animeData.filter(anime => 
+                anime.userStatus === 'Completed' && 
+                anime.finishDate && 
+                new Date(anime.finishDate).getFullYear().toString() === currentYear
+            );
+            
+            const watchingAnime = animeData.filter(anime => 
+                anime.userStatus === 'Watching' && 
+                anime.finishDate && 
+                new Date(anime.finishDate).getFullYear().toString() === currentYear
+            );
+            
+            if (completedAnime.length > 0 || watchingAnime.length > 0) {
+                const section = document.createElement('div');
+                section.className = 'month-section';
+                
+                const header = document.createElement('h3');
+                header.className = 'month-header';
+                header.textContent = currentYear;
+                header.addEventListener('click', () => {
+                    yearSelect.value = currentYear;
+                    monthSelect.value = 'all';
+                    handleFilterChange();
+                });
+                
+                // Completed section
+                if (completedAnime.length > 0) {
+                    const completedHeader = document.createElement('h4');
+                    completedHeader.textContent = 'Completed';
+                    completedHeader.style.marginTop = '15px';
+                    completedHeader.style.color = 'var(--success)';
+                    section.appendChild(completedHeader);
+                    
+                    const grid = document.createElement('div');
+                    grid.className = 'anime-grid';
+                    
+                    completedAnime.forEach(anime => {
+                        const card = createAnimeCard(anime);
+                        grid.appendChild(card);
+                    });
+                    
+                    section.appendChild(grid);
+                }
+                
+                // Watching section
+                if (watchingAnime.length > 0) {
+                    const watchingHeader = document.createElement('h4');
+                    watchingHeader.textContent = 'Watching';
+                    watchingHeader.style.marginTop = '15px';
+                    watchingHeader.style.color = 'var(--info)';
+                    section.appendChild(watchingHeader);
+                    
+                    const grid = document.createElement('div');
+                    grid.className = 'anime-grid';
+                    
+                    watchingAnime.forEach(anime => {
+                        const card = createAnimeCard(anime);
+                        grid.appendChild(card);
+                    });
+                    
+                    section.appendChild(grid);
+                }
+                
+                monthlyCompleted.appendChild(section);
+            }
+        });
+        
+        if (monthlyCompleted.children.length === 1) {
+            monthlyCompleted.innerHTML += '<p>No anime yet.</p>';
+        }
+        return;
+    }
+    
+    // Show only the selected month's anime
+    monthlyCompleted.innerHTML = `<h2>Anime for ${getMonthName(month)} ${year}</h2>`;
+    
+    const completedAnime = animeData.filter(anime => {
+        if (anime.userStatus !== 'Completed' || !anime.finishDate) return false;
+        const finishDate = new Date(anime.finishDate);
+        return finishDate.getFullYear().toString() === year && 
+               (finishDate.getMonth() + 1).toString().padStart(2, '0') === month;
+    });
+    
+    const watchingAnime = animeData.filter(anime => {
+        if (anime.userStatus !== 'Watching' || !anime.finishDate) return false;
+        const finishDate = new Date(anime.finishDate);
+        return finishDate.getFullYear().toString() === year && 
+               (finishDate.getMonth() + 1).toString().padStart(2, '0') === month;
+    });
+    
+    // Completed section
+    if (completedAnime.length > 0) {
+        const completedHeader = document.createElement('h3');
+        completedHeader.textContent = 'Completed';
+        completedHeader.style.color = 'var(--success)';
+        completedHeader.style.marginBottom = '10px';
+        monthlyCompleted.appendChild(completedHeader);
+        
+        const grid = document.createElement('div');
+        grid.className = 'anime-grid';
+        
+        completedAnime.forEach(anime => {
+            const card = createAnimeCard(anime);
+            grid.appendChild(card);
+        });
+        
+        monthlyCompleted.appendChild(grid);
+    }
+    
+    // Watching section
+    if (watchingAnime.length > 0) {
+        const watchingHeader = document.createElement('h3');
+        watchingHeader.textContent = 'Watching';
+        watchingHeader.style.color = 'var(--info)';
+        watchingHeader.style.margin = '20px 0 10px 0';
+        monthlyCompleted.appendChild(watchingHeader);
+        
+        const grid = document.createElement('div');
+        grid.className = 'anime-grid';
+        
+        watchingAnime.forEach(anime => {
+            const card = createAnimeCard(anime);
+            grid.appendChild(card);
+        });
+        
+        monthlyCompleted.appendChild(grid);
+    }
+    
+    if (completedAnime.length === 0 && watchingAnime.length === 0) {
+        monthlyCompleted.innerHTML += '<p>No anime for this month yet.</p>';
+    }
+
+    // Add event listeners for edit/delete buttons
+    addEditDeleteListeners();
+}
+
+// Helper function to create anime card
+function createAnimeCard(anime) {
+    const card = document.createElement('div');
+    card.className = 'anime-card';
+    card.innerHTML = `
+        <img src="${anime.cover}" alt="${anime.title}" class="anime-card-img">
+        <div class="anime-card-info">
+            <div class="anime-card-title">${anime.title}</div>
+            <div class="anime-card-meta">
+                <span>${anime.type}</span>
+                <span>${anime.score ? anime.score.toFixed(1) : 'No score'}</span>
+            </div>
+            <div class="anime-card-status" style="margin-top: 5px;">
+                ${anime.userStatus === 'Completed' ? 
+                    '<span class="badge badge-completed">Completed</span>' : 
+                    '<span class="badge badge-watching">Watching</span>'}
+            </div>
+        </div>
+        <button class="edit-btn" data-id="${anime.id}">Edit</button>
+        <button class="delete-btn" data-id="${anime.id}">Delete</button>
+    `;
+    return card;
+}
+
+// Helper function to add edit/delete listeners
+function addEditDeleteListeners() {
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            editAnime(parseInt(btn.dataset.id));
+        });
+    });
+
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (confirm('Are you sure you want to delete this anime?')) {
+                deleteAnime(parseInt(btn.dataset.id));
+            }
+        });
+    });
+}
+
+// Helper function to get month name from number
+function getMonthName(monthNumber) {
+    const date = new Date();
+    date.setMonth(parseInt(monthNumber) - 1);
+    return date.toLocaleString('default', { month: 'long' });
+}
+
+// Edit anime
+function editAnime(id) {
+    const anime = animeData.find(a => a.id === id);
+    if (!anime) return;
+
+    isEditing = true;
+    currentEditId = id;
+    
+    document.getElementById('animeId').value = anime.id;
+    document.getElementById('animeTitle').value = anime.title;
+    document.getElementById('animeType').value = anime.type;
+    document.getElementById('animeEpisodes').value = anime.episodes;
+    document.getElementById('animeStatus').value = anime.userStatus;
+    document.getElementById('animeProgress').value = anime.progress;
+    document.getElementById('animeScore').value = anime.score || '';
+    document.getElementById('animeCover').value = anime.cover;
+    document.getElementById('animeGenres').value = anime.genres ? anime.genres.join(', ') : '';
+    
+    if (anime.finishDate) {
+        const finishDate = new Date(anime.finishDate);
+        document.getElementById('animeYear').value = finishDate.getFullYear().toString();
+        document.getElementById('animeMonth').value = (finishDate.getMonth() + 1).toString().padStart(2, '0');
+    }
+    
+    submitBtn.textContent = 'Update Anime';
+    deleteBtn.style.display = 'inline-block';
+    addAnimeModal.style.display = 'flex';
+}
+
+// Delete anime
+function deleteAnime(id = null) {
+    if (!id) id = currentEditId;
+    if (!id) return;
+
+    animeData = animeData.filter(a => a.id !== id);
+    saveData();
+    
+    addAnimeModal.style.display = 'none';
+    animeForm.reset();
+    
+    renderAnimeList();
+    updateStats();
+    updateChart();
+    renderMonthlyCompleted();
+}
+
+// Save data to localStorage
+function saveData() {
+    localStorage.setItem('animeData', JSON.stringify(animeData));
+    updateTopGenres();
+    updateRecentActivity();
+}
+
+// Handle adding/updating anime
+function handleAddAnime(e) {
+    e.preventDefault();
+    
+    const title = document.getElementById('animeTitle').value;
+    const type = document.getElementById('animeType').value;
+    const episodes = parseInt(document.getElementById('animeEpisodes').value);
+    const status = document.getElementById('animeStatus').value;
+    const progress = parseInt(document.getElementById('animeProgress').value);
+    const score = document.getElementById('animeScore').value ? parseFloat(document.getElementById('animeScore').value) : null;
+    const year = document.getElementById('animeYear').value;
+    const month = document.getElementById('animeMonth').value;
+    const cover = document.getElementById('animeCover').value || 'https://via.placeholder.com/150x200?text=No+Image';
+    const genres = document.getElementById('animeGenres').value.split(',').map(g => g.trim()).filter(g => g);
+    
+    let finishDate = null;
+    let completedTimestamp = null;
+    if (status === 'Completed') {
+        finishDate = `${year}-${month}-01`;
+        completedTimestamp = Date.now();
+    }
+    
+    if (isEditing && currentEditId) {
+        const index = animeData.findIndex(a => a.id === currentEditId);
+        if (index !== -1) {
+            animeData[index] = {
+                ...animeData[index],
+                title,
+                type,
+                episodes,
+                duration: 20,
+                status: status === 'Completed' ? 'Completed' : 'Ongoing',
+                userStatus: status,
+                progress,
+                score,
+                genres,
+                finishDate,
+                completedTimestamp: status === 'Completed' ? completedTimestamp : animeData[index].completedTimestamp,
+                cover
+            };
+        }
+    } else {
+        const newAnime = {
+            id: animeData.length > 0 ? Math.max(...animeData.map(a => a.id)) + 1 : 1,
+            title,
+            type,
+            episodes,
+            duration: 20,
+            status: status === 'Completed' ? 'Completed' : 'Ongoing',
+            userStatus: status,
+            progress,
+            score,
+            genres,
+            finishDate,
+            completedTimestamp,
+            cover
+        };
+        
+        animeData.push(newAnime);
+    }
+    
+    saveData();
+    
+    addAnimeModal.style.display = 'none';
+    animeForm.reset();
+    searchResults.style.display = 'none';
+    searchResults.innerHTML = '';
+    
+    isEditing = false;
+    currentEditId = null;
+    submitBtn.textContent = 'Add Anime';
+    deleteBtn.style.display = 'none';
+    
+    renderAnimeList();
+    updateStats();
+    updateChart();
+    renderMonthlyCompleted();
+}
+
+// JSON + PDF Export
+function exportData() {
+    if (!animeData.length) {
+        alert("No data to export.");
+        return;
+    }
+
+    // Export JSON
+    const blob = new Blob([JSON.stringify(animeData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'anime-tracker-backup.json';
+    link.click();
+    URL.revokeObjectURL(url);
+
+    // Export PDF
+    exportToPDF();
+}
+
+// PDF Export (readable format)
+function exportToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFontSize(12);
+    doc.text("Anime Tracker Export", 14, 20);
+
+    let y = 30;
+    animeData.forEach((anime, index) => {
+        const title = anime.title.length > 40 ? anime.title.slice(0, 40) + "..." : anime.title;
+        const line = `${index + 1}. ${title} (${anime.episodes} eps) [${anime.userStatus}]`;
+        doc.text(line, 14, y);
+        y += 8;
+        if (y > 280) {
+            doc.addPage();
+            y = 20;
+        }
+    });
+
+    doc.save("anime-tracker.pdf");
+}
+
+// Import JSON File
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const imported = JSON.parse(e.target.result);
+            if (!Array.isArray(imported)) throw new Error("Invalid file format");
+
+            animeData = imported;
+            localStorage.setItem('animeData', JSON.stringify(animeData));
+            
+            renderAnimeList();
+            updateStats();
+            updateChart();
+            renderMonthlyCompleted();
+            updateTopGenres();
+            updateRecentActivity();
+
+            alert("Import successful!");
+        } catch (err) {
+            alert("Import failed: " + err.message);
+        }
+    };
+    reader.readAsText(file);
+}
+
+    </script>
+</body>
+</html>
