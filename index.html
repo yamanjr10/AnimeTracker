@@ -620,9 +620,576 @@
                 }
             }
 
+            /* Modal fixes */
+                   .modal {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background-color: rgba(0,0,0,0.7);
+                        display: none;
+                        justify-content: center;
+                        align-items: flex-start;
+                        padding-top: 50px;
+                        z-index: 1000;
+                        overflow-y: auto;
+                    }
+
+                    .modal-content {
+                        background: white;
+                        border-radius: 10px;
+                        padding: 20px;
+                        width: 90%;
+                        max-width: 800px;
+                        position: relative;
+                        margin-bottom: 50px; /* Ensures space at bottom for scrolling */
+                    }
+
+                    .close-modal {
+                        position: absolute;
+                        top: 10px;
+                        right: 10px;
+                        background: none;
+                        border: none;
+                        font-size: 1.5rem;
+                        cursor: pointer;
+                        color: var(--dark);
+                    }
+
+                .stats-container {
+                    max-height: 70vh;
+                    overflow-y: auto;
+                    padding: 0 15px;
+                }
+
+                .stats-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                    gap: 15px;
+                    margin-bottom: 20px;
+                }
+
+                .stat-card {
+                    background: rgba(255, 255, 255, 0.9);
+                    border-radius: 10px;
+                    padding: 15px;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                    text-align: center;
+                    transition: transform 0.2s;
+                    min-width: 150px;
+                }
+
+                .stat-card:hover {
+                    transform: translateY(-3px);
+                }
+
+                .stat-card h4 {
+                    margin: 0 0 10px 0;
+                    color: var(--primary);
+                    font-size: 0.95rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                }
+
+                .stat-card .stat-value {
+                    font-size: 1.4rem;
+                    font-weight: 700;
+                    color: var(--dark);
+                }
+
+                .fa-sad-tear {
+                        color: #dc3545; /* Red color for lowest rated */
+                    }
+
+                    .fa-trophy {
+                        color: #ffc107; /* Gold color for highest rated */
+                    }
+
+                /* Responsive adjustments */
+                @media (max-width: 768px) {
+                    .stats-grid {
+                        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                    }
+                    
+                    .stat-card h4 {
+                        font-size: 0.85rem;
+                    }
+                    
+                    .stat-card .stat-value {
+                        font-size: 1.2rem;
+                    }
+                }
+
+                @media (max-width: 768px) {
+                    .stats-grid {
+                        grid-template-columns: 1fr 1fr;
+                    }
+                    
+                    .modal-content {
+                        width: 95%;
+                        padding: 15px;
+                    }
+                }
+
+                .genres-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                    gap: 15px;
+                    margin-top: 15px;
+                }
+
+                .genre-card {
+                    background: white;
+                    border-radius: 10px;
+                    padding: 15px;
+                    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                    border-left: 4px solid var(--primary);
+                }
+
+                .genre-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+                }
+
+                .genre-card h4 {
+                    margin: 0 0 10px 0;
+                    color: var(--primary-dark);
+                    font-size: 1rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                .genre-card h4 i {
+                    font-size: 0.9em;
+                }
+
+                .genre-stats {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 8px;
+                    font-size: 0.85rem;
+                }
+
+                .genre-stat {
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .genre-stat-label {
+                    font-weight: 600;
+                    color: var(--dark);
+                    font-size: 0.75rem;
+                }
+
+                .genre-stat-value {
+                    font-weight: 700;
+                    color: var(--primary);
+                    font-size: 0.9rem;
+                }
+
+                @media (max-width: 768px) {
+                    .genres-grid {
+                        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .genres-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+
+                /* Pie Chart Container */
+                    .chart-wrapper {
+                    position: relative;
+                    width: 100%;
+                    min-height: 300px; /* Minimum height for mobile */
+                    }
+
+                    #genrePieChart {
+                    width: 100% !important;
+                    height: auto !important;
+                    max-height: 70vh;
+                    }
+
+                    /* Responsive Legend */
+                    @media (max-width: 768px) {
+                    .chartjs-legend {
+                        position: relative !important;
+                        text-align: center;
+                    }
+                    
+                    .chartjs-legend li {
+                        display: inline-block;
+                        margin: 5px;
+                    }
+                    
+                    .chart-wrapper {
+                        min-height: 400px; /* More space for mobile legend */
+                    }
+                    }
+
+                    #statusFilter {
+                        background-color: white;
+                        color: var(--dark);
+                        border: 1px solid #ddd;
+                        padding: 8px 12px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    }
+
+                    #statusFilter:hover {
+                        border-color: var(--primary);
+                    }
+
+                    @media (max-width: 768px) {
+                        .anime-list > div {
+                            flex-direction: column;
+                            align-items: flex-start;
+                        }
+                        
+                        #statusFilter {
+                            margin-top: 10px;
+                            width: 100%;
+                        }
+                    }
+
+                    /* Landing Animations */
+                        header {
+                        animation: fadeInDown 0.8s ease-out, floatHeader 6s ease-in-out infinite;
+                        }
+
+                        @keyframes floatHeader {
+                        0%, 100% {
+                            transform: translateY(0);
+                        }
+                        50% {
+                            transform: translateY(-10px);
+                        }
+                        }
+
+                        /* Card entry animations */
+                        .dashboard .card {
+                        animation: fadeInUp 0.6s ease-out;
+                        }
+
+                        .dashboard .card:nth-child(1) {
+                        animation-delay: 0.2s;
+                        }
+
+                        .dashboard .card:nth-child(2) {
+                        animation-delay: 0.4s;
+                        }
+
+                        .dashboard .card:nth-child(3) {
+                        animation-delay: 0.6s;
+                        }
+
+                        @keyframes fadeInUp {
+                        from {
+                            opacity: 0;
+                            transform: translateY(30px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                        }
+
+                        /* Anime card hover animation */
+                        .anime-card {
+                        transition: all 0.3s ease;
+                        transform-style: preserve-3d;
+                        }
+
+                        .anime-card:hover {
+                        transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+                        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+                        }
+
+                        /* Custom Scrollbars */
+                        ::-webkit-scrollbar {
+                        width: 12px;
+                        height: 12px;
+                        }
+
+                        ::-webkit-scrollbar-track {
+                        background: rgba(255, 255, 255, 0.1);
+                        border-radius: 10px;
+                        }
+
+                        ::-webkit-scrollbar-thumb {
+                        background: linear-gradient(to bottom, #6a5acd, #ff7f50);
+                        border-radius: 10px;
+                        border: 2px solid rgba(255, 255, 255, 0.2);
+                        }
+
+                        ::-webkit-scrollbar-thumb:hover {
+                        background: linear-gradient(to bottom, #483d8b, #e6735c);
+                        }
+
+                        /* For Firefox */
+                        html {
+                        scrollbar-width: thin;
+                        scrollbar-color: #6a5acd rgba(255, 255, 255, 0.1);
+                        }
+
+                        /* Dark mode scrollbars */
+                        .dark-mode ::-webkit-scrollbar-track {
+                        background: rgba(0, 0, 0, 0.2);
+                        }
+
+                        .dark-mode ::-webkit-scrollbar-thumb {
+                        background: linear-gradient(to bottom, #483d8b, #8a4fff);
+                        border-color: rgba(0, 0, 0, 0.2);
+                        }
+
+                        .dark-mode ::-webkit-scrollbar-thumb:hover {
+                        background: linear-gradient(to bottom, #3a2d7a, #7a3fff);
+                        }
+
+                        .dark-mode html {
+                        scrollbar-color: #483d8b rgba(0, 0, 0, 0.2);
+                        }
+
+                        /* Dark Mode */
+                            body.dark-mode {
+                            background-color: #1a1a2e;
+                            color: #e6e6e6;
+                            }
+
+                            .dark-mode .card,
+                            .dark-mode .chart-container,
+                            .dark-mode .anime-list {
+                            background-color: #16213e;
+                            color: #e6e6e6;
+                            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+                            }
+
+                            .dark-mode th {
+                            background-color: #0f3460;
+                            }
+
+                            .dark-mode tr:nth-child(even) {
+                            background-color: #1a1a2e;
+                            }
+
+                            .dark-mode tr:hover {
+                            background-color: #0f3460;
+                            }
+
+                            /* Add toggle button in header */
+                            header {
+                            position: relative;
+                            }
+
+                            .theme-toggle {
+                            position: absolute;
+                            right: 20px;
+                            top: 20px;
+                            background: rgba(255,255,255,0.2);
+                            border: none;
+                            border-radius: 50%;
+                            width: 40px;
+                            height: 40px;
+                            color: white;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            }
+
+                            /* Seasonal Tracking */
+                            .seasonal-section {
+                                background: white;
+                                border-radius: 10px;
+                                padding: 20px;
+                                margin-bottom: 30px;
+                                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                            }
+
+                            .season-tabs {
+                                display: flex;
+                                gap: 10px;
+                                margin-bottom: 20px;
+                                flex-wrap: wrap;
+                            }
+
+                            .season-tab {
+                                padding: 8px 16px;
+                                border: none;
+                                border-radius: 20px;
+                                background: #f0f0f0;
+                                cursor: pointer;
+                                transition: all 0.3s;
+                                font-weight: 600;
+                            }
+
+                            .season-tab.active {
+                                background: var(--primary);
+                                color: white;
+                            }
+
+                            .season-tab:hover:not(.active) {
+                                background: #e0e0e0;
+                            }
+
+                            .season-grid {
+                                display: grid;
+                                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                                gap: 20px;
+                            }
+
+                            /* Dark mode */
+                            .dark-mode .seasonal-section {
+                                background: #16213e;
+                            }
+
+                            .dark-mode .season-tab {
+                                background: #1a1a2e;
+                                color: #e6e6e6;
+                            }
+
+                            .dark-mode .season-tab.active {
+                                background: var(--primary-dark);
+                            }
+
+                            /* Timeline Slider */
+                            .timeline-section {
+                                background: white;
+                                border-radius: 10px;
+                                padding: 20px;
+                                margin-bottom: 30px;
+                                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                            }
+
+                            .timeline-container {
+                                display: flex;
+                                align-items: center;
+                                gap: 10px;
+                                margin-top: 20px;
+                            }
+
+                            .timeline-slider {
+                                flex: 1;
+                                overflow: hidden;
+                                position: relative;
+                                height: 200px;
+                            }
+
+                            .timeline-slide {
+                                position: absolute;
+                                width: 100%;
+                                height: 100%;
+                                transition: transform 0.5s ease;
+                                display: flex;
+                                flex-direction: column;
+                                padding: 15px;
+                                background: rgba(255, 255, 255, 0.8);
+                                border-radius: 8px;
+                                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                            }
+
+                            .timeline-nav {
+                                background: var(--primary);
+                                color: white;
+                                border: none;
+                                border-radius: 50%;
+                                width: 40px;
+                                height: 40px;
+                                cursor: pointer;
+                                transition: all 0.3s;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            }
+
+                            .timeline-nav:hover {
+                                background: var(--primary-dark);
+                                transform: scale(1.1);
+                            }
+
+                            .timeline-nav:disabled {
+                                opacity: 0.5;
+                                cursor: not-allowed;
+                            }
+
+                            .timeline-header {
+                                display: flex;
+                                justify-content: space-between;
+                                margin-bottom: 15px;
+                            }
+
+                            .timeline-month {
+                                font-size: 1.2rem;
+                                font-weight: 600;
+                                color: var(--primary);
+                            }
+
+                            .timeline-stats {
+                                display: flex;
+                                gap: 15px;
+                            }
+
+                            .timeline-stat {
+                                background: rgba(106, 90, 205, 0.1);
+                                padding: 5px 10px;
+                                border-radius: 20px;
+                                font-size: 0.9rem;
+                            }
+
+                            .timeline-anime {
+                                display: flex;
+                                overflow-x: auto;
+                                gap: 15px;
+                                padding-bottom: 10px;
+                            }
+
+                            .timeline-anime-item {
+                                min-width: 120px;
+                                text-align: center;
+                            }
+
+                            .timeline-anime-item img {
+                                width: 80px;
+                                height: 120px;
+                                object-fit: cover;
+                                border-radius: 5px;
+                                margin-bottom: 5px;
+                            }
+
+                            .timeline-anime-item p {
+                                font-size: 0.8rem;
+                                white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                            }
+
+                            /* Dark mode */
+                            .dark-mode .timeline-section {
+                                background: #16213e;
+                            }
+
+                            .dark-mode .timeline-slide {
+                                background: rgba(26, 26, 46, 0.8);
+                            }
+
+                            .dark-mode .timeline-stat {
+                                background: rgba(106, 90, 205, 0.2);
+                            }
+
     </style>
 </head>
 <body>
+
+    <!-------------- Main ------------------->
+
     <div class="container">
         <header>
             <h1>My Anime Tracker</h1>
@@ -635,7 +1202,7 @@
                 <select id="yearSelect">
                     <option value="all">All Time</option>
                     <option value="2024">2024</option>
-                    <option value="2025">2025</option>
+                    <option value="2025"selected>2025</option>
                     <option value="2026">2026</option>
                     <option value="2027">2027</option>
                     <option value="2028">2028</option>
@@ -652,7 +1219,7 @@
                     <option value="03">March</option>
                     <option value="04">April</option>
                     <option value="05">May</option>
-                    <option value="06">June</option>
+                    <option value="06" selected>June</option>
                     <option value="07">July</option>
                     <option value="08">August</option>
                     <option value="09">September</option>
@@ -670,10 +1237,9 @@
 
     <button onclick="document.getElementById('importFile').click()"><i class="fa fa-upload" aria-hidden="true"></i> Import</button>
 </div>
+               </div>
 
-        </div>
-
-        
+       <!---------------- Summary ---------------> 
 
         <div class="loader" id="loader"></div>
 
@@ -696,6 +1262,7 @@
                     <span class="stat-label">Hours Watched:</span>
                     <span class="stat-value" id="hoursWatched">0</span>
                 </div>
+              <a href="#" onclick="showSummaryModal()" style="color: black;"> See more</a>
             </div>
 
             <div class="card">
@@ -704,6 +1271,7 @@
                     <!-- Will be auto-populated -->
                     <div class="genre-tag">Loading...</div>
                 </div>
+                <a href="#" onclick="showGenresModal()" style="color: black;"> See more</a>
             </div>
 
             <div class="card">
@@ -715,17 +1283,35 @@
                         <span class="stat-value"></span>
                     </div>
                 </div>
+                <a href="#" onclick="showActivityModal()" style="color: black;"> See more</a>
             </div>
         </div>
+
+        <!------------------------- Stats ------------------------>
 
         <div class="chart-container">
             <h2> <i class="fa fa-bar-chart" aria-hidden="true"></i> Monthly Progress</h2>
             <canvas id="animeChart"></canvas>
         </div>
 
-        <div class="anime-list">
-            <h2> <i class="fa fa-list-ul" aria-hidden="true"></i> Anime List</h2>
-             <div class="table-responsive">
+
+        <!--------------------- Anime List-------------->
+
+       <div class="anime-list">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2><i class="fa fa-list-ul" aria-hidden="true"></i> Anime List</h2>
+        <div>
+            <label for="statusFilter" style="margin-right: 10px;">Filter by Status:</label>
+            <select id="statusFilter" style="padding: 8px 12px; border-radius: 5px; border: 1px solid #ddd;">
+                <option value="all">All</option>
+                <option value="Completed">Completed</option>
+                <option value="Watching">Watching</option>
+                <option value="Plan to Watch">Planed</option>
+                <option value="Dropped">Dropped</option>
+            </select>
+        </div>
+    </div>
+    <div class="table-responsive">
             <table>
                 <thead>
                     <tr>
@@ -749,12 +1335,12 @@
         </div>
     </div>
 
-    <!-- Add Anime Modal -->
+    <!-------------------- Add Anime Modal ---------------->
+
     <div class="modal" id="addAnimeModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">Add New Anime</h3>
-                <button class="close-modal">&times;</button>
             </div>
             <form id="animeForm">
                 <input type="hidden" id="animeId">
@@ -781,7 +1367,6 @@
                 <div class="form-group">
                     <label>Duration per Episode</label>
                     <input type="text" value="20 minutes" disabled>
-                    <small>Fixed at 20 minutes for all anime</small>
                 </div>
                 <div class="form-group">
                     <label for="animeStatus">Status</label>
@@ -804,7 +1389,7 @@
                     <label for="animeYear">Completion Year</label>
                     <select id="animeYear">
                         <option value="2024">2024</option>
-                        <option value="2025">2025</option>
+                        <option value="2025"selected>2025</option>
                         <option value="2026">2026</option>
                         <option value="2027">2027</option>
                         <option value="2028">2028</option>
@@ -820,7 +1405,7 @@
                         <option value="03">March</option>
                         <option value="04">April</option>
                         <option value="05">May</option>
-                        <option value="06">June</option>
+                        <option value="06" selected>June</option>
                         <option value="07">July</option>
                         <option value="08">August</option>
                         <option value="09">September</option>
@@ -845,7 +1430,179 @@
             </form>
         </div>
     </div>
-    
+
+    <!------------------- stats card Modal ---------------------->
+
+<div class="modal" id="summaryModal">
+    <div class="modal-content">
+        <button class="close-modal">&times;</button>
+        <h2>Detailed Statistics</h2>
+        
+        <div class="stats-grid">
+            <!-- Basic Counts -->
+            <div class="stat-card">
+                <h4><i class="fa fa-film"></i> Total Entries</h4>
+                <div class="stat-value" id="totalAnime">0</div>
+            </div>
+            <div class="stat-card">
+                <h4><i class="fa fa-check-circle"></i> Completed</h4>
+                <div class="stat-value" id="completedTotal">0</div>
+            </div>
+            <div class="stat-card">
+                <h4><i class="fa fa-times-circle"></i> Dropped</h4>
+                <div class="stat-value" id="droppedCount">0</div>
+            </div>
+            
+            <!-- Media Types -->
+            <div class="stat-card">
+                <h4><i class="fa fa-tv"></i> TV Series</h4>
+                <div class="stat-value" id="tvSeriesCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h4><i class="fa fa-film"></i> Movies</h4>
+                <div class="stat-value" id="moviesCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h4><i class="fa fa-desktop"></i> ONA</h4>
+                <div class="stat-value" id="onaCount">0</div>
+            </div>
+            
+            <!-- Time Stats -->
+            <div class="stat-card">
+                <h4><i class="fa fa-clock"></i> Total Hours</h4>
+                <div class="stat-value" id="totalHours">0</div>
+            </div>
+            
+            <!-- Episode Stats -->
+            <div class="stat-card">
+                <h4><i class="fa fa-list-ol"></i> Total Episodes</h4>
+                <div class="stat-value" id="totalEpisodes">0</div>
+            </div>
+
+            <!-- Score Stats -->
+            <div class="stat-card">
+                <h4><i class="fa fa-star-half-alt"></i> Avg Score</h4>
+                <div class="stat-value" id="avgScore">0</div>
+            </div>
+            <div class="stat-card">
+                <h4><i class="fa fa-trophy"></i> Highest Rated</h4>
+                <div class="stat-value" id="highestRated">-</div>
+            </div>
+            <div class="stat-card">
+                <h4><i class="fa fa-sad-tear"></i> Lowest Rated</h4>
+                <div class="stat-value" id="lowestRated">-</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!------------------- Top Genres Modal ----------------->
+
+     <div class="modal" id="genresModal">
+    <div class="modal-content">
+        <button class="close-modal">&times;</button>
+        <h2>Genre Statistics</h2>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h4><i class="fas fa-tags"></i> Total Genres</h4>
+                <div class="stat-value" id="totalGenresCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h4><i class="fas fa-star"></i> Highest Rated</h4>
+                <div class="stat-value" id="highestRatedGenre">-</div>
+            </div>
+            <div class="stat-card">
+                <h4><i class="fas fa-tv"></i> Most TV Shows</h4>
+                <div class="stat-value" id="mostCommonTVGenre">-</div>
+            </div>
+            <div class="stat-card">
+                <h4><i class="fas fa-film"></i> Most Movies</h4>
+                <div class="stat-value" id="mostCommonMovieGenre">-</div>
+            </div>
+        </div>
+        
+        <h3 style="margin: 25px 0 15px; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 8px;">
+            <i class="fas fa-list-ul"></i> All Genres
+        </h3>
+        <div id="allGenresContainer" class="genres-grid">
+            <!-- Genre cards will be added here -->
+        </div>
+    </div>
+</div>
+
+              <!--------------------- Recent Activity Modal ----------------->
+
+    <div class="modal" id="activityModal">
+    <div class="modal-content">
+        <button class="close-modal">&times;</button>
+        <h2>Detailed Activity Statistics</h2>
+        
+        <div class="stats-grid">
+            <!-- Basic Stats -->
+            <div class="stat-card">
+                <h4><i class="fa fa-film"></i> First Added</h4>
+                <div class="stat-value" id="firstAnime">-</div>
+            </div>
+            <div class="stat-card">
+                <h4><i class="fa fa-film"></i> Last Added</h4>
+                <div class="stat-value" id="lastAnime">-</div>
+            </div>
+            <div class="stat-card">
+                <h4><i class="fa fa-star"></i> Avg Score</h4>
+                <div class="stat-value" id="avgScoreActivity">-</div>
+            </div>
+            
+            <!-- Time Stats -->
+            <div class="stat-card">
+                <h4><i class="fa fa-clock"></i> Total Hours</h4>
+                <div class="stat-value" id="totalHoursActivity">-</div>
+            </div>
+            <div class="stat-card">
+                <h4><i class="fa fa-calendar"></i> Busiest Month</h4>
+                <div class="stat-value" id="busiestMonth">-</div>
+            </div>
+            
+            <!-- Anime Stats -->
+            <div class="stat-card">
+                <h4><i class="fa fa-list-ol"></i> Longest Anime</h4>
+                <div class="stat-value" id="longestAnime">-</div>
+            </div>
+            <div class="stat-card">
+                <h4><i class="fa fa-trophy"></i> Highest Rated</h4>
+                <div class="stat-value" id="highestRatedActivity">-</div>
+            </div>
+            <div class="stat-card">
+                <h4><i class="fa fa-sad-tear"></i> Lowest Rated</h4>
+                <div class="stat-value" id="lowestRatedActivity">-</div>
+            </div>
+            
+            <!-- Type Stats -->
+            <div class="stat-card">
+                <h4><i class="fa fa-tv"></i> Most Common Type</h4>
+                <div class="stat-value" id="mostCommonType">-</div>
+            </div>
+            <div class="stat-card">
+                <h4><i class="fa fa-heart"></i> Favorite Genre</h4>
+                <div class="stat-value" id="favoriteGenre">-</div>
+            </div>
+            <div class="stat-card">
+                <h4><i class="fa fa-bolt"></i> Completion Rate</h4>
+                <div class="stat-value" id="completionRate">-</div>
+            </div>
+        </div>
+        
+        <h3 style="margin: 25px 0 15px; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 8px;">
+            <i class="fas fa-history"></i> Recent Additions
+        </h3>
+        <div id="recentAdditions" style="max-height: 200px; overflow-y: auto; border: 1px solid #eee; border-radius: 5px;">
+            <!-- Recent additions will be added here -->
+        </div>
+    </div>
+</div>
+
+   <!-------------------------- SCRIPT -------------------------> 
+   
     <script>
 
 // Initialize with empty data
@@ -856,6 +1613,7 @@ let currentEditId = null;
 // DOM elements
 const yearSelect = document.getElementById('yearSelect');
 const monthSelect = document.getElementById('monthSelect');
+const statusFilter = document.getElementById('statusFilter');
 const addAnimeBtn = document.getElementById('addAnimeBtn');
 const animeTableBody = document.getElementById('animeTableBody');
 const monthlyCompleted = document.getElementById('monthlyCompleted');
@@ -895,6 +1653,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add event listeners
     yearSelect.addEventListener('change', handleFilterChange);
     monthSelect.addEventListener('change', handleFilterChange);
+    statusFilter.addEventListener('change', handleFilterChange);
     addAnimeBtn.addEventListener('click', () => {
         isEditing = false;
         currentEditId = null;
@@ -1024,27 +1783,39 @@ function hideLoader() {
 function renderAnimeList() {
     const year = yearSelect.value;
     const month = monthSelect.value;
+    const status = statusFilter.value;
     
     animeTableBody.innerHTML = '';
     
     const filteredAnime = animeData.filter(anime => {
-        if (year === 'all' && month === 'all') return true;
-        if (year === 'all') return true;
+        // Always apply status filter
+        if (status !== 'all' && anime.userStatus !== status) return false;
         
-        if (!anime.finishDate) return false;
-        
-        const finishDate = new Date(anime.finishDate);
-        const finishYear = finishDate.getFullYear().toString();
-        const finishMonth = (finishDate.getMonth() + 1).toString().padStart(2, '0');
-        
-        if (year !== 'all' && finishYear !== year) return false;
-        if (month !== 'all' && finishMonth !== month) return false;
+        // For year/month filtering:
+        if (year !== 'all') {
+            // For completed anime, check finishDate
+            if (anime.userStatus === 'Completed') {
+                if (!anime.finishDate) return false;
+                
+                const finishDate = new Date(anime.finishDate);
+                const finishYear = finishDate.getFullYear().toString();
+                if (finishYear !== year) return false;
+                
+                if (month !== 'all') {
+                    const finishMonth = (finishDate.getMonth() + 1).toString().padStart(2, '0');
+                    if (finishMonth !== month) return false;
+                }
+            }
+            // For non-completed anime, check the current year if you want to include them
+            // Or you can choose to exclude them from year/month filters
+            // Here we'll include them if they match the status filter
+        }
         
         return true;
     });
     
     if (filteredAnime.length === 0) {
-        animeTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No anime found for the selected period</td></tr>';
+        animeTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No anime found for the selected filters</td></tr>';
         return;
     }
     
@@ -1250,7 +2021,6 @@ filteredAnime.forEach(anime => {
 });
 const longest = longestAnime ? `${longestAnime.title.length > 14 ? longestAnime.title.slice(0, 14) + '...' : longestAnime.title} (${longestAnime.episodes} eps)`: 'N/A';
  
-
     
     recentActivityContainer.innerHTML = `
         <div class="stat">
@@ -1824,6 +2594,764 @@ function importData(event) {
     };
     reader.readAsText(file);
 }
+
+// Show summary modal
+function showSummaryModal() {
+    const year = yearSelect.value;
+    const month = monthSelect.value;
+    
+    // Filter anime based on selections
+    const filteredAnime = animeData.filter(anime => {
+        if (year === 'all' && month === 'all') return true;
+        if (!anime.finishDate) return false;
+        
+        const finishDate = new Date(anime.finishDate);
+        const finishYear = finishDate.getFullYear().toString();
+        const finishMonth = (finishDate.getMonth() + 1).toString().padStart(2, '0');
+        
+        if (year !== 'all' && finishYear !== year) return false;
+        if (month !== 'all' && finishMonth !== month) return false;
+        return true;
+    });
+
+    // Calculate all statistics including ONA
+    const stats = {
+        total: filteredAnime.length,
+        completed: filteredAnime.filter(a => a.userStatus === 'Completed').length,
+        dropped: filteredAnime.filter(a => a.userStatus === 'Dropped').length,
+        tvSeries: filteredAnime.filter(a => a.type === 'TV').length,
+        movies: filteredAnime.filter(a => a.type === 'Movie').length,
+        ona: filteredAnime.filter(a => a.type === 'ONA').length,
+        totalHours: (filteredAnime
+            .filter(a => a.userStatus === 'Completed')
+            .reduce((sum, anime) => sum + (anime.episodes * 20 / 60), 0)
+            .toFixed(1)),
+        totalEpisodes: filteredAnime
+            .filter(a => a.userStatus === 'Completed')
+            .reduce((sum, anime) => sum + anime.episodes, 0)
+    };
+
+    // Score calculations
+    const scoredAnime = filteredAnime.filter(a => a.score);
+    stats.avgScore = scoredAnime.length > 0 
+        ? (scoredAnime.reduce((sum, a) => sum + a.score, 0) / scoredAnime.length).toFixed(1)
+        : 'N/A';
+
+    // Find highest/lowest rated
+    let highestRated = '-';
+    let lowestRated = '-';
+    if (scoredAnime.length > 0) {
+        const sorted = [...scoredAnime].sort((a, b) => b.score - a.score);
+        highestRated = sorted[0].title;
+        lowestRated = sorted[sorted.length - 1].title;
+    }
+
+    // Update DOM elements
+    const elements = {
+        'totalAnime': stats.total,
+        'completedTotal': stats.completed,
+        'droppedCount': stats.dropped,
+        'avgScore': stats.avgScore,
+        'tvSeriesCount': stats.tvSeries,
+        'moviesCount': stats.movies,
+        'onaCount': stats.ona,
+        'totalHours': stats.totalHours,
+        'totalEpisodes': stats.totalEpisodes,
+        'highestRated': highestRated.length > 15 ? highestRated.substring(0, 15) + "..." : highestRated,
+        'lowestRated': lowestRated.length > 15 ? lowestRated.substring(0, 15) + "..." : lowestRated
+    };
+
+    Object.entries(elements).forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+    });
+
+    // Show modal
+    document.getElementById('summaryModal').style.display = 'flex';
+}
+
+// Show genres modal
+function showGenresModal() {
+    const year = yearSelect.value;
+    const month = monthSelect.value;
+    
+    // Calculate genre statistics
+    const genreStats = {
+        counts: {},
+        scores: {},
+        tvCounts: {},
+        movieCounts: {},
+        animeCounts: {},
+        avgScores: {}
+    };
+    
+    animeData.forEach(anime => {
+        if (!anime.genres || anime.genres.length === 0 || anime.userStatus !== 'Completed') return;
+        
+        // Filter by year/month if specified
+        if (year !== 'all') {
+            if (!anime.finishDate) return;
+            const finishDate = new Date(anime.finishDate);
+            const finishYear = finishDate.getFullYear().toString();
+            if (finishYear !== year) return;
+            
+            if (month !== 'all') {
+                const finishMonth = (finishDate.getMonth() + 1).toString().padStart(2, '0');
+                if (finishMonth !== month) return;
+            }
+        }
+        
+        // Count genres
+        anime.genres.forEach(genre => {
+            if (genre) {
+                // Count occurrences
+                genreStats.counts[genre] = (genreStats.counts[genre] || 0) + 1;
+                
+                // Track anime titles for this genre
+                if (!genreStats.animeCounts[genre]) {
+                    genreStats.animeCounts[genre] = [];
+                }
+                genreStats.animeCounts[genre].push(anime.title);
+                
+                // Accumulate scores for average calculation
+                if (anime.score) {
+                    if (!genreStats.scores[genre]) {
+                        genreStats.scores[genre] = { sum: 0, count: 0 };
+                    }
+                    genreStats.scores[genre].sum += anime.score;
+                    genreStats.scores[genre].count++;
+                }
+                
+                // Count by type
+                if (anime.type === 'TV') {
+                    genreStats.tvCounts[genre] = (genreStats.tvCounts[genre] || 0) + 1;
+                } else if (anime.type === 'Movie') {
+                    genreStats.movieCounts[genre] = (genreStats.movieCounts[genre] || 0) + 1;
+                }
+            }
+        });
+    });
+    
+    // Calculate average scores
+    Object.keys(genreStats.scores).forEach(genre => {
+        genreStats.avgScores[genre] = genreStats.scores[genre].sum / genreStats.scores[genre].count;
+    });
+    
+    // Calculate highest rated genre
+    let highestRatedGenre = '-';
+    let highestAvgScore = 0;
+    Object.entries(genreStats.avgScores).forEach(([genre, avgScore]) => {
+        if (avgScore > highestAvgScore) {
+            highestAvgScore = avgScore;
+            highestRatedGenre = `${genre} (${avgScore.toFixed(1)})`;
+        }
+    });
+    
+    // Find most common TV genre
+    let mostCommonTVGenre = '-';
+    let maxTVCount = 0;
+    Object.entries(genreStats.tvCounts).forEach(([genre, count]) => {
+        if (count > maxTVCount) {
+            maxTVCount = count;
+            mostCommonTVGenre = `${genre} (${count})`;
+        }
+    });
+    
+    // Find most common Movie genre
+    let mostCommonMovieGenre = '-';
+    let maxMovieCount = 0;
+    Object.entries(genreStats.movieCounts).forEach(([genre, count]) => {
+        if (count > maxMovieCount) {
+            maxMovieCount = count;
+            mostCommonMovieGenre = `${genre} (${count})`;
+        }
+    });
+    
+    // Update summary stats
+    document.getElementById('totalGenresCount').textContent = Object.keys(genreStats.counts).length;
+    document.getElementById('highestRatedGenre').textContent = highestRatedGenre;
+    document.getElementById('mostCommonTVGenre').textContent = mostCommonTVGenre;
+    document.getElementById('mostCommonMovieGenre').textContent = mostCommonMovieGenre;
+    
+    // Display all genres in cards
+    const allGenresContainer = document.getElementById('allGenresContainer');
+    allGenresContainer.innerHTML = '';
+    
+    const sortedGenres = Object.entries(genreStats.counts)
+        .sort((a, b) => b[1] - a[1]);
+    
+    if (sortedGenres.length > 0) {
+        sortedGenres.forEach(([genre, count]) => {
+            const genreCard = document.createElement('div');
+            genreCard.className = 'genre-card';
+            
+            const tvCount = genreStats.tvCounts[genre] || 0;
+            const movieCount = genreStats.movieCounts[genre] || 0;
+            const avgScore = genreStats.avgScores[genre] ? genreStats.avgScores[genre].toFixed(1) : 'N/A';
+            const sampleAnime = genreStats.animeCounts[genre].slice(0, 3).join(', ');
+            
+            genreCard.innerHTML = `
+                <h4><i class="fas fa-tag"></i> ${genre}</h4>
+                <div class="genre-stats">
+                    <div class="genre-stat">
+                        <span class="genre-stat-label">Total</span>
+                        <span class="genre-stat-value">${count}</span>
+                    </div>
+                    <div class="genre-stat">
+                        <span class="genre-stat-label">Avg Score</span>
+                        <span class="genre-stat-value">${avgScore}</span>
+                    </div>
+                    <div class="genre-stat">
+                        <span class="genre-stat-label">TV Shows</span>
+                        <span class="genre-stat-value">${tvCount}</span>
+                    </div>
+                    <div class="genre-stat">
+                        <span class="genre-stat-label">Movies</span>
+                        <span class="genre-stat-value">${movieCount}</span>
+                    </div>
+                </div>
+                <div style="margin-top: 10px; font-size: 0.75rem; color: #666;">
+                    <div style="font-weight: 600;">Sample Anime:</div>
+                    <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" 
+                         title="${sampleAnime}">${sampleAnime}</div>
+                </div>
+            `;
+            
+            allGenresContainer.appendChild(genreCard);
+        });
+    } else {
+        allGenresContainer.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">No genre data available</p>';
+    }
+    
+    // Show modal
+    document.getElementById('genresModal').style.display = 'flex';
+}
+
+// Show activity modal
+function showActivityModal() {
+    const year = yearSelect.value;
+    const month = monthSelect.value;
+    
+    let filteredAnime = animeData;
+    if (year !== 'all') {
+        filteredAnime = animeData.filter(anime => {
+            if (!anime.finishDate) return false;
+            const finishDate = new Date(anime.finishDate);
+            const finishYear = finishDate.getFullYear().toString();
+            if (finishYear !== year) return false;
+            
+            if (month !== 'all') {
+                const finishMonth = (finishDate.getMonth() + 1).toString().padStart(2, '0');
+                if (finishMonth !== month) return false;
+            }
+            return true;
+        });
+    }
+    
+    // Sort by when they were added to the tracker (using id as proxy)
+    const sortedAnime = [...filteredAnime].sort((a, b) => a.id - b.id);
+    
+    // Basic stats
+    const firstAnime = sortedAnime.length > 0 ? sortedAnime[0].title : 'None';
+    const lastAnime = sortedAnime.length > 0 ? sortedAnime[sortedAnime.length - 1].title : 'None';
+    
+    // Calculate average score
+    const scoredAnime = filteredAnime.filter(a => a.score);
+    const averageScore = scoredAnime.length > 0 
+        ? (scoredAnime.reduce((sum, a) => sum + a.score, 0) / scoredAnime.length).toFixed(1)
+        : 'N/A';
+    
+    // Calculate total hours watched
+    const totalHours = filteredAnime
+        .filter(a => a.userStatus === 'Completed')
+        .reduce((sum, a) => sum + (a.episodes * 20 / 60), 0)
+        .toFixed(1);
+
+    // Find longest anime (by episodes)
+    let longestAnime = null;
+    filteredAnime.forEach(anime => {
+        if (anime.userStatus === 'Completed' && anime.episodes) {
+            if (!longestAnime || anime.episodes > longestAnime.episodes) {
+                longestAnime = anime;
+            }
+        }
+    });
+    
+    // Find highest and lowest rated
+    let highestRated = { title: '-', score: 0 };
+    let lowestRated = { title: '-', score: 10 };
+    scoredAnime.forEach(anime => {
+        if (anime.score > highestRated.score) {
+            highestRated = { title: anime.title, score: anime.score };
+        }
+        if (anime.score < lowestRated.score) {
+            lowestRated = { title: anime.title, score: anime.score };
+        }
+    });
+    
+    // Find most common type
+    const typeCounts = {};
+    filteredAnime.forEach(anime => {
+        typeCounts[anime.type] = (typeCounts[anime.type] || 0) + 1;
+    });
+    let mostCommonType = '-';
+    let maxTypeCount = 0;
+    Object.entries(typeCounts).forEach(([type, count]) => {
+        if (count > maxTypeCount) {
+            maxTypeCount = count;
+            mostCommonType = type;
+        }
+    });
+    
+    // Find favorite genre
+    const genreCounts = {};
+    filteredAnime.forEach(anime => {
+        if (anime.genres) {
+            anime.genres.forEach(genre => {
+                genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+            });
+        }
+    });
+    let favoriteGenre = '-';
+    let maxGenreCount = 0;
+    Object.entries(genreCounts).forEach(([genre, count]) => {
+        if (count > maxGenreCount) {
+            maxGenreCount = count;
+            favoriteGenre = genre;
+        }
+    });
+    
+    // Calculate completion rate
+    const totalCompleted = filteredAnime.filter(a => a.userStatus === 'Completed').length;
+    const completionRate = filteredAnime.length > 0 
+        ? Math.round((totalCompleted / filteredAnime.length) * 100) + '%' 
+        : 'N/A';
+    
+    // Find busiest month
+    const monthCounts = {};
+    filteredAnime.forEach(anime => {
+        if (anime.finishDate) {
+            const month = new Date(anime.finishDate).getMonth();
+            monthCounts[month] = (monthCounts[month] || 0) + 1;
+        }
+    });
+    let busiestMonth = '-';
+    let maxMonthCount = 0;
+    Object.entries(monthCounts).forEach(([month, count]) => {
+        if (count > maxMonthCount) {
+            maxMonthCount = count;
+            busiestMonth = new Date(0, month).toLocaleString('default', { month: 'long' });
+        }
+    });
+    
+    // Update modal content
+    const setStat = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+    };
+    
+    setStat('firstAnime', firstAnime.length > 20 ? firstAnime.substring(0, 20) + "..." : firstAnime);
+    setStat('lastAnime', lastAnime.length > 20 ? lastAnime.substring(0, 20) + "..." : lastAnime);
+    setStat('avgScoreActivity', averageScore);
+    setStat('totalHoursActivity', totalHours);
+    setStat('longestAnime', longestAnime ? 
+        `${longestAnime.title.length > 15 ? longestAnime.title.substring(0, 15) + "..." : longestAnime.title} (${longestAnime.episodes} eps)` : 
+        'N/A');
+    setStat('highestRatedActivity', highestRated.title.length > 20 ? 
+        `${highestRated.title.substring(0, 20)}... (${highestRated.score.toFixed(1)})` : 
+        `${highestRated.title} (${highestRated.score.toFixed(1)})`);
+    setStat('lowestRatedActivity', lowestRated.title.length > 20 ? 
+        `${lowestRated.title.substring(0, 20)}... (${lowestRated.score.toFixed(1)})` : 
+        `${lowestRated.title} (${lowestRated.score.toFixed(1)})`);
+    setStat('mostCommonType', mostCommonType);
+    setStat('favoriteGenre', favoriteGenre);
+    setStat('completionRate', completionRate);
+    setStat('busiestMonth', busiestMonth);
+    
+    // Show recent additions
+    const recentAdditions = document.getElementById('recentAdditions');
+    recentAdditions.innerHTML = '';
+    
+    const recentAnime = [...filteredAnime].sort((a, b) => b.id - a.id).slice(0, 5);
+    if (recentAnime.length > 0) {
+        recentAnime.forEach(anime => {
+            const item = document.createElement('div');
+            item.style.padding = '10px';
+            item.style.borderBottom = '1px solid #eee';
+            item.style.display = 'flex';
+            item.style.alignItems = 'center';
+            item.style.transition = 'background-color 0.2s';
+            
+            item.innerHTML = `
+                <img src="${anime.cover}" alt="${anime.title}" 
+                     style="width: 40px; height: 60px; object-fit: cover; margin-right: 10px; border-radius: 3px;">
+                <div style="flex: 1;">
+                    <div style="font-weight: 600;">${anime.title.length > 25 ? anime.title.substring(0, 25) + "..." : anime.title}</div>
+                    <small style="display: block; margin-top: 3px;">
+                        ${anime.type} • 
+                        <span style="color: ${anime.userStatus === 'Completed' ? 'var(--success)' : 
+                                          anime.userStatus === 'Watching' ? 'var(--info)' : 
+                                          anime.userStatus === 'Plan to Watch' ? 'var(--warning)' : 
+                                          'var(--danger)'}">
+                            ${anime.userStatus}
+                        </span> • 
+                        ${anime.score ? anime.score.toFixed(1) : 'No score'}
+                    </small>
+                </div>
+            `;
+            
+            item.addEventListener('click', () => {
+                editAnime(anime.id);
+                document.getElementById('activityModal').style.display = 'none';
+            });
+            
+            item.addEventListener('mouseenter', () => {
+                item.style.backgroundColor = '#f5f5f5';
+                item.style.cursor = 'pointer';
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                item.style.backgroundColor = '';
+            });
+            
+            recentAdditions.appendChild(item);
+        });
+    } else {
+        recentAdditions.innerHTML = '<p style="text-align: center; padding: 15px;">No recent activity</p>';
+    }
+    
+    // Show modal
+    document.getElementById('activityModal').style.display = 'flex';
+}
+
+// Modal control functions
+const modal = {
+    hide: function() {
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.style.display = 'none';
+        });
+        document.body.style.overflow = '';
+    },
+    hideSummary: function() {
+        document.getElementById('summaryModal').style.display = 'none';
+        document.body.style.overflow = '';
+    },
+    hideGenres: function() {
+        document.getElementById('genresModal').style.display = 'none';
+        document.body.style.overflow = '';
+    },
+    hideActivity: function() {
+        document.getElementById('activityModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+};
+
+// Event delegation for reliable closing
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('close-modal')) {
+        if (document.getElementById('summaryModal').style.display === 'flex') {
+            modal.hideSummary();
+        } else if (document.getElementById('genresModal').style.display === 'flex') {
+            modal.hideGenres();
+        } else if (document.getElementById('activityModal').style.display === 'flex') {
+            modal.hideActivity();
+        }
+    }
+    else if (e.target.classList.contains('modal')) {
+        modal.hide();
+    }
+});
+
+// Escape key to close modals
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        modal.hide();
+    }
+});
+
+// Call this in your initialization
+document.addEventListener('DOMContentLoaded', () => {
+  renderGenrePieChart();
+});
+
+// Add to your DOMContentLoaded event
+document.addEventListener('DOMContentLoaded', function() {
+  // Animate elements when they come into view
+  const animateOnScroll = () => {
+    const elements = document.querySelectorAll('.card, .chart-container, .anime-list');
+    
+    elements.forEach((element, index) => {
+      const elementPosition = element.getBoundingClientRect().top;
+      const screenPosition = window.innerHeight / 1.3;
+      
+      if (elementPosition < screenPosition) {
+        element.style.animation = `fadeInUp 0.6s ease-out ${index * 0.1}s forwards`;
+        element.style.opacity = '0'; // Start invisible
+      }
+    });
+  };
+  
+  // Run on load and scroll
+  animateOnScroll();
+  window.addEventListener('scroll', animateOnScroll);
+});
+
+// Dark mode toggle
+const themeToggle = document.createElement('button');
+themeToggle.className = 'theme-toggle';
+themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+document.querySelector('header').appendChild(themeToggle);
+
+themeToggle.addEventListener('click', () => {
+  document.body.classList.toggle('dark-mode');
+  const isDark = document.body.classList.contains('dark-mode');
+  themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+  
+  // Save preference
+  localStorage.setItem('darkMode', isDark);
+});
+
+// Check for saved preference
+if (localStorage.getItem('darkMode') === 'true') {
+  document.body.classList.add('dark-mode');
+  themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+}
+
+// Seasonal tracking functions
+function getCurrentSeason() {
+    const month = new Date().getMonth() + 1;
+    if (month >= 3 && month <= 5) return 'spring';
+    if (month >= 6 && month <= 8) return 'summer';
+    if (month >= 9 && month <= 11) return 'fall';
+    return 'winter';
+}
+
+function filterAnimeBySeason(season) {
+    const seasons = {
+        winter: [12, 1, 2],
+        spring: [3, 4, 5],
+        summer: [6, 7, 8],
+        fall: [9, 10, 11]
+    };
+    
+    return animeData.filter(anime => {
+        if (!anime.finishDate) return false;
+        const finishMonth = new Date(anime.finishDate).getMonth() + 1;
+        return seasons[season].includes(finishMonth);
+    });
+}
+
+function renderSeasonalAnime(season) {
+    const container = document.getElementById('currentSeason');
+    container.innerHTML = '';
+    
+    const animeList = season === 'current' 
+        ? filterAnimeBySeason(getCurrentSeason())
+        : filterAnimeBySeason(season);
+    
+    if (animeList.length === 0) {
+        container.innerHTML = '<p>No anime found for this season.</p>';
+        return;
+    }
+    
+    const grid = document.createElement('div');
+    grid.className = 'season-grid';
+    
+    animeList.forEach(anime => {
+        const card = createAnimeCard(anime);
+        grid.appendChild(card);
+    });
+    
+    container.appendChild(grid);
+}
+
+// Add event listeners for season tabs
+document.querySelectorAll('.season-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.season-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        renderSeasonalAnime(tab.dataset.season);
+    });
+});
+
+// Initialize seasonal view
+renderSeasonalAnime('current');
+
+// Gener Prefrence 
+function renderGenreRadarChart() {
+    const genreHours = {};
+    
+    // Calculate watch time per genre
+    animeData.forEach(anime => {
+        if (anime.userStatus === 'Completed' && anime.genres) {
+            const hours = (anime.episodes * 20) / 60;
+            anime.genres.forEach(genre => {
+                genreHours[genre] = (genreHours[genre] || 0) + hours;
+            });
+        }
+    });
+    
+    // Sort and get top 8 genres
+    const sortedGenres = Object.entries(genreHours)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+    
+    const labels = sortedGenres.map(([genre]) => genre);
+    const data = sortedGenres.map(([_, hours]) => hours);
+    
+    const ctx = document.getElementById('genreRadarChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Hours Watched',
+                data: data,
+                backgroundColor: 'rgba(106, 90, 205, 0.5)',
+                borderColor: 'rgba(106, 90, 205, 1)',
+                borderWidth: 2,
+                pointBackgroundColor: 'rgba(106, 90, 205, 1)',
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.raw.toFixed(1)} hours`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                r: {
+                    angleLines: {
+                        display: true,
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    },
+                    suggestedMin: 0,
+                    ticks: {
+                        stepSize: Math.max(...data) / 5
+                    }
+                }
+            },
+            animation: {
+                duration: 2000
+            }
+        }
+    });
+}
+
+// Call this in your initialization
+document.addEventListener('DOMContentLoaded', renderGenreRadarChart);
+
+// Timeline Slider
+function createTimelineSlides() {
+    const slider = document.getElementById('timelineSlider');
+    slider.innerHTML = '';
+    
+    // Group anime by month/year
+    const timelineData = {};
+    animeData.forEach(anime => {
+        if (!anime.finishDate) return;
+        
+        const date = new Date(anime.finishDate);
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const key = `${year}-${month}`;
+        
+        if (!timelineData[key]) {
+            timelineData[key] = {
+                year,
+                month,
+                anime: []
+            };
+        }
+        timelineData[key].anime.push(anime);
+    });
+    
+    // Sort timeline data chronologically
+    const sortedTimeline = Object.values(timelineData).sort((a, b) => {
+        if (a.year !== b.year) return a.year - b.year;
+        return a.month - b.month;
+    });
+    
+    if (sortedTimeline.length === 0) {
+        slider.innerHTML = '<div class="timeline-slide"><p>No timeline data available yet.</p></div>';
+        return;
+    }
+    
+    // Create slides
+    sortedTimeline.forEach((data, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'timeline-slide';
+        slide.dataset.index = index;
+        
+        const monthName = new Date(data.year, data.month).toLocaleString('default', { month: 'long', year: 'numeric' });
+        const animeCount = data.anime.length;
+        const hoursWatched = data.anime.reduce((sum, a) => sum + (a.episodes * 20 / 60), 0).toFixed(1);
+        
+        slide.innerHTML = `
+            <div class="timeline-header">
+                <div class="timeline-month">${monthName}</div>
+                <div class="timeline-stats">
+                    <div class="timeline-stat">${animeCount} Anime</div>
+                    <div class="timeline-stat">${hoursWatched} Hours</div>
+                </div>
+            </div>
+            <div class="timeline-anime">
+                ${data.anime.map(anime => `
+                    <div class="timeline-anime-item" onclick="editAnime(${anime.id})">
+                        <img src="${anime.cover}" alt="${anime.title}">
+                        <p>${anime.title.length > 15 ? anime.title.substring(0, 15) + '...' : anime.title}</p>
+                        <small>${anime.score ? anime.score.toFixed(1) : 'No score'}</small>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        slider.appendChild(slide);
+    });
+    
+    // Initialize slider
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.timeline-slide');
+    
+    function updateSlider() {
+        slides.forEach((slide, index) => {
+            slide.style.transform = `translateX(${(index - currentSlide) * 100}%)`;
+        });
+        
+        document.getElementById('timelinePrev').disabled = currentSlide === 0;
+        document.getElementById('timelineNext').disabled = currentSlide === slides.length - 1;
+    }
+    
+    document.getElementById('timelinePrev').addEventListener('click', () => {
+        if (currentSlide > 0) {
+            currentSlide--;
+            updateSlider();
+        }
+    });
+    
+    document.getElementById('timelineNext').addEventListener('click', () => {
+        if (currentSlide < slides.length - 1) {
+            currentSlide++;
+            updateSlider();
+        }
+    });
+    
+    updateSlider();
+}
+
+// Call this in your initialization
+document.addEventListener('DOMContentLoaded', createTimelineSlides);
+
 
     </script>
 </body>
