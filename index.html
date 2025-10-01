@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="https://www.pngall.com/wp-content/uploads/13/Anime-Logo-PNG-Cutout.png"
-        type="image/x-icon">
+    <link rel="shortcut icon" href="https://www.pngall.com/wp-content/uploads/13/Anime-Logo-PNG-Cutout.png"type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Scripts -->
     <script src="https://kit.fontawesome.com/8eadf802c0.js" crossorigin="anonymous"></script>
@@ -13,6 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <title>My Anime Tracker</title>
+    
     <style>
         :root {
             --primary: #6a5acd;
@@ -68,10 +68,10 @@
         header {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            padding: 2.5rem 0;
+            padding: 1.5rem 0;
             text-align: center;
             border-radius: var(--border-radius);
-            margin-bottom: 2.5rem;
+            margin-bottom: 1.5rem;
             box-shadow: var(--card-shadow);
             position: relative;
             overflow: hidden;
@@ -100,7 +100,7 @@
             z-index: 1;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             background: linear-gradient(to right, white, #e0e0e0);
-            -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -111,6 +111,42 @@
             position: relative;
             z-index: 1;
             color: rgba(255, 255, 255, 0.9);
+        }
+
+        .profile-avatar {
+            margin-right: 1rem;
+        }
+
+        .avatar-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+        }
+
+        .profile-info h3 {
+            margin-bottom: 0.25rem;
+            color: var(--primary-dark);
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .profile-stats i {
+            margin-right: 0.25rem;
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .profile-stats {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
         }
 
         /* Dashboard Grid */
@@ -1261,7 +1297,7 @@
         </header>
 
         <div class="controls">
-            <div>
+            <div> 
                 <label for="yearSelect">Select Year: </label>
                 <select id="yearSelect">
                     <option value="all">All Time</option>
@@ -1285,9 +1321,9 @@
                     <option value="05">May</option>
                     <option value="06">June</option>
                     <option value="07">July</option>
-                    <option value="08" selected>August</option>
+                    <option value="08">August</option>
                     <option value="09">September</option>
-                    <option value="10">October</option>
+                    <option value="10"selected>October</option>
                     <option value="11">November</option>
                     <option value="12">December</option>
                 </select>
@@ -1471,9 +1507,9 @@
                         <option value="05">May</option>
                         <option value="06">June</option>
                         <option value="07">July</option>
-                        <option value="08" selected>August</option>
+                        <option value="08">August</option>
                         <option value="09">September</option>
-                        <option value="10">October</option>
+                        <option value="10"selected>October</option>
                         <option value="11">November</option>
                         <option value="12">December</option>
                     </select>
