@@ -2726,6 +2726,7 @@ input:checked + .toggle-slider:before {
     margin: 1rem;
     transition: all 0.3s ease;
     border: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
 }
 
 .sidebar-user:hover {
@@ -2787,6 +2788,7 @@ input:checked + .toggle-slider:before {
     align-items: center;
     text-align: center;
     line-height: 1.2;
+    cursor: pointer;
 }
 
 .stat-item i {
@@ -2799,6 +2801,7 @@ input:checked + .toggle-slider:before {
     font-weight: 600;
     color: #fff;
     font-size: 1.1rem;
+    cursor: pointer;
 }
 
 .stat-label {
@@ -2852,6 +2855,7 @@ input:checked + .toggle-slider:before {
     font-weight: 600;
     margin-left: auto;
 }
+
 
 /* Watchlist Filters */
 .watchlist-filters {
@@ -3032,4 +3036,145 @@ input:checked + .toggle-slider:before {
     opacity: 0.3;
     cursor: not-allowed;
 }
+
+.stat-item {
+  transition: all 0.4s ease-in-out;
+  cursor: default;
+}
+
+.fade-out {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.fade-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.stat-number[title] {
+  position: relative;
+}
+
+.anime-title-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.anime-cover {
+    width: 45px;
+    height: 65px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.anime-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.anime-title {
+    font-weight: 600;
+    color: var(--text-light);
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.anime-genres {
+    font-size: 0.8em;
+    opacity: 0.7;
+}
+
+.progress-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    width: clamp(100px, 15vw, 160px);
+}
+
+.progress-container {
+    background: rgba(255, 255, 255, 0.1);
+    height: 8px;
+    width: 100%;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 3px;
+}
+
+
+.progress-bar {
+      background: linear-gradient(90deg, #6a5acd, #20b2aa);
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.4s ease;
+}
+
+.badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+/* === Anime Card (Dashboard / Watchlist) === */
+.anime-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  background: var(--card-bg);
+  transition: var(--transition);
+  cursor: pointer;
+
+  /* 📏 size adjustments */
+  width: 230px;     /* was 200px → slightly wider */
+  min-height: 380px; /* was smaller before → adds breathing room */
+}
+
+.anime-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--card-hover-shadow);
+}
+
+/* 🎞️ Cover image section */
+.anime-card .anime-cover {
+  width: 100%;
+  height: 300px; /* taller cover for better visual balance */
+  object-fit: cover;
+  border-radius: 0;
+}
+
+/* 🧾 Info section */
+.anime-card .anime-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.9rem;
+  flex-grow: 1;
+}
+
+.anime-card .anime-title {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.anime-card .anime-genres {
+  font-size: 0.8em;
+  opacity: 0.7;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
 

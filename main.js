@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateCurrentDate();
     initializeTheme();
 
-        // === PROFILE SYNC START ===
+    // === PROFILE SYNC START ===
     const usernameInput = document.getElementById('usernameInput');
     const avatarInput = document.getElementById('avatarInput');
     const resetAvatarBtn = document.getElementById('resetAvatar');
@@ -204,6 +204,9 @@ document.addEventListener('DOMContentLoaded', function () {
             this.classList.add('active');
             document.getElementById(pageId).classList.add('active');
 
+            // 🧭 Scroll back to top on page change
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
             // Initialize specific page content
             if (pageId === 'statistics-page') {
                 setTimeout(() => {
@@ -245,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize user name
     initializeUserName();
     initSettings();
-    
+
 
     // Mobile menu functionality
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
@@ -416,9 +419,11 @@ function initCharts() {
             datasets: [{
                 label: 'Anime Completed',
                 data: calculateMonthlyProgress(),
-                backgroundColor: 'rgba(106, 90, 205, 0.7)',
-                borderColor: 'rgba(106, 90, 205, 1)',
-                borderWidth: 1
+                backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                borderColor: 'rgba(99, 102, 241, 1)',
+                borderWidth: 2,
+                borderRadius: 6,
+                borderSkipped: false,
             }]
         },
         options: {
@@ -460,22 +465,26 @@ function initCharts() {
             datasets: [{
                 data: Object.values(calculateGenreDistribution()),
                 backgroundColor: [
-                    '#6a5acd', '#9370db', '#20b2aa', '#ff7f50', '#48bb78', '#f56565', '#ed8936', '#4299e1'
+                    '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#cd5cf6ff',
+                    '#06b6d4', '#84cc16', '#f97316', '#ec4899', '#64748b'
                 ],
-                borderWidth: 0
+                borderWidth: 3,
+                hoverOffset: 8
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '60%',
             plugins: {
                 legend: {
-                    position: 'right'
-                },
-                title: {
-                    display: true,
-                    text: getCurrentMonth() + ' Distribution',
-                    color: getComputedStyle(document.body).getPropertyValue('--text')
+                    position: 'right',
+                    labels: {
+                        color: 'gray',
+                        padding: 20,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
                 }
             }
         }
@@ -791,55 +800,83 @@ function updateAnimeTableView(animeList) {
     const tableBody = document.getElementById('anime-table-body');
 
     if (animeList.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="7" class="no-anime">No anime found matching your filters. Add some anime to get started!</td></tr>';
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="no-anime">
+                    No anime found matching your filters. Add some anime to get started!
+                </td>
+            </tr>`;
         return;
     }
 
     tableBody.innerHTML = animeList.map(anime => {
-        // Handle different status classes
+        // 🏷️ Status class & text
         let statusClass = '';
-        let statusText = anime.userStatus || 'Unknown';
-
+        const statusText = anime.userStatus || 'Unknown';
         switch (anime.userStatus) {
-            case 'Completed':
-                statusClass = 'badge-completed';
-                break;
-            case 'Watching':
-                statusClass = 'badge-watching';
-                break;
-            case 'Plan to Watch':
-                statusClass = 'badge-plan';
-                break;
-            case 'Dropped':
-                statusClass = 'badge-dropped';
-                break;
-            default:
-                statusClass = 'badge-plan';
+            case 'Completed': statusClass = 'badge-completed'; break;
+            case 'Watching': statusClass = 'badge-watching'; break;
+            case 'Plan to Watch': statusClass = 'badge-plan'; break;
+            case 'Dropped': statusClass = 'badge-dropped'; break;
+            default: statusClass = 'badge-plan';
         }
 
-        // Format completion date
+        // 📅 Format completion date
         let completionDate = '-';
         if (anime.finishDate) {
             const date = new Date(anime.finishDate);
             completionDate = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
         }
 
+        // 🎞️ Progress bar
+        const progress = anime.progress || 0;
+        const episodes = anime.episodes || 0;
+        const progressPercentage = episodes > 0 ? Math.round((progress / episodes) * 100) : 0;
+
+        const progressBar = `
+    <div class="progress-wrapper">
+        <div class="progress-container">
+            <div class="progress-bar" style="width: ${progressPercentage}%"></div>
+        </div>
+        <small>${progress}/${episodes || '?'} (${progressPercentage}%)</small>
+    </div>
+`;
+
+
+        // 💯 Score display
+        const scoreDisplay = anime.score
+            ? `<span class="anime-score">${anime.score.toFixed(1)}</span>`
+            : '-';
+
+
+        // 📕 Title (shorten long ones)
+        const safeTitle = anime.title.length > 35 ? anime.title.slice(0, 35) + '...' : anime.title;
+
+        // 🎨 Title + Cover + Genres
+        const titleWithCover = `
+            <div class="anime-title-cell">
+                <img src="${anime.cover || 'https://via.placeholder.com/50x70/6a5acd/ffffff?text=No+Image'}"
+                     alt="${anime.title}" class="anime-cover">
+                <div class="anime-info">
+                    <div class="anime-title" title="${anime.title}">${safeTitle}</div>
+                    ${anime.genres && anime.genres.length > 0
+                ? `<div class="anime-genres">${anime.genres.slice(0, 3).join(', ')}</div>`
+                : ''}
+                </div>
+            </div>
+        `;
+
+        // 🧱 Return table row
         return `
             <tr data-id="${anime.id}" onclick="event.stopPropagation(); editAnime('${anime.id}')">
-        <td><img src="${anime.cover || 'https://via.placeholder.com/50x70/6a5acd/ffffff?text=No+Image'}" alt="${anime.title}"></td>
-        <td>
-            <div class="anime-title">${anime.title}</div>
-            ${anime.genres && anime.genres.length > 0 ?
-                `<div class="anime-genres">${anime.genres.slice(0, 3).join(', ')}</div>` :
-                ''}
-        </td>
-        <td>${anime.type || 'TV'}</td>
-        <td class="anime-progress">${anime.progress || 0}/${anime.episodes || '?'}</td>
-        <td><span class="badge ${statusClass}">${statusText}</span></td>
-        <td>${anime.score ? `<span class="anime-score"> ${anime.score}</span>` : '-'}</td>
-        <td class="completion-date">${completionDate}</td>
-    </tr>
-`;
+                <td>${titleWithCover}</td>
+                <td>${anime.type || 'TV'}</td>
+                <td>${progressBar}</td>
+                <td><span class="badge ${statusClass}">${statusText}</span></td>
+                <td>${scoreDisplay}</td>
+                <td>${completionDate}</td>
+            </tr>
+        `;
     }).join('');
 }
 
@@ -1176,6 +1213,7 @@ function updateCurrentDate() {
     const formattedDate = now.toLocaleDateString('en-US', options);
     document.getElementById('currentDate').textContent = formattedDate;
 }
+
 
 // User name management
 function getUserName() {
@@ -1712,7 +1750,21 @@ function initStatisticsCharts() {
                 datasets: [{
                     data: calculateScoreDistribution(),
                     backgroundColor: [
-                        '#6a5acd', '#beca1cff', '#20b2aa', '#ff7f50', '#48bb78', '#f56565'
+                        'rgba(139, 92, 246, 0.8)',
+                        'rgba(16, 185, 129, 0.8)',
+                        'rgba(245, 158, 11, 0.8)',
+                        'rgba(239, 68, 68, 0.8)',
+                        'rgba(59, 130, 246, 0.8)',
+                        'rgba(156, 163, 175, 0.8)'
+                    ],
+                    borderWidth: 2,
+                    hoverBackgroundColor: [
+                        'rgba(139, 92, 246, 1)',
+                        'rgba(16, 185, 129, 1)',
+                        'rgba(245, 158, 11, 1)',
+                        'rgba(239, 68, 68, 1)',
+                        'rgba(59, 130, 246, 1)',
+                        'rgba(156, 163, 175, 1)'
                     ]
                 }]
             },
@@ -1721,7 +1773,9 @@ function initStatisticsCharts() {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'right'
+                        position: 'right',
+                        labels: {
+                        }
                     }
                 }
             }
@@ -1768,7 +1822,7 @@ function initStatisticsCharts() {
                 datasets: [{
                     data: Object.values(calculateTypeDistribution()),
                     backgroundColor: [
-                        '#6a5acd', '#9370db', '#20b2aa', '#ff7f50', '#48bb78'
+                        '#6a5acd', '#70db70ff', '#20b2aa', '#ff7f50', '#48bb78'
                     ],
                     borderWidth: 0
                 }]
@@ -1838,22 +1892,79 @@ function initStatisticsCharts() {
 }
 
 // Initialize new charts
-function initNewCharts() {
-    // Episodes Watched Over Time Chart
+function initNewCharts(selectedYear = new Date().getFullYear()) {
+    // === EPISODES WATCHED OVER TIME CHART ===
     const episodesOverTimeCtx = document.getElementById('episodesOverTimeChart')?.getContext('2d');
     if (episodesOverTimeCtx) {
+
+        // 🧮 Calculate episodes watched per month for the selected year (validated + deduplicated)
+        function calculateEpisodesOverTime(year = selectedYear) {
+            const monthlyEpisodes = Array(12).fill(0);
+            const seen = new Set(); // track duplicates
+
+            animeData.forEach(anime => {
+                if (anime.userStatus !== "Completed" || !anime.finishDate) return;
+
+                const finishDate = new Date(anime.finishDate);
+                if (isNaN(finishDate)) return; // skip invalid date
+                if (finishDate.getFullYear() !== year) return; // skip other years
+                if (finishDate > new Date()) return; // skip future-dated anime
+
+                const monthIndex = finishDate.getMonth();
+                if (monthIndex < 0 || monthIndex > 11) return;
+
+                const key = `${anime.title || anime.name}-${finishDate.toISOString().slice(0, 10)}`;
+                if (seen.has(key)) return; // skip duplicates
+                seen.add(key);
+
+                const eps = Number(anime.episodes) || 0;
+                monthlyEpisodes[monthIndex] += eps;
+            });
+
+            return monthlyEpisodes.map(e => Math.round(e));
+        }
+
+        // 🧮 Calculate total episodes watched for the selected year
+        function calculateTotalEpisodesThisYear(year = selectedYear) {
+            let totalEpisodes = 0;
+            const seen = new Set();
+
+            animeData.forEach(anime => {
+                if (anime.userStatus !== "Completed" || !anime.finishDate) return;
+
+                const finishDate = new Date(anime.finishDate);
+                if (isNaN(finishDate)) return;
+                if (finishDate.getFullYear() !== year) return;
+                if (finishDate > new Date()) return;
+
+                const key = `${anime.title || anime.name}-${finishDate.toISOString().slice(0, 10)}`;
+                if (seen.has(key)) return;
+                seen.add(key);
+
+                totalEpisodes += Number(anime.episodes) || 0;
+            });
+
+            return Math.round(totalEpisodes);
+        }
+
+        // 🎨 Create the Episodes Over Time chart
         episodesOverTimeChart = new Chart(episodesOverTimeCtx, {
             type: 'line',
             data: {
-                labels: calculateMonthlyLabels(),
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 datasets: [{
-                    label: 'Episodes Watched',
+                    label: `Episodes Watched (${selectedYear})`,
                     data: calculateEpisodesOverTime(),
-                    backgroundColor: 'rgba(106, 90, 205, 0.1)',
-                    borderColor: 'rgba(106, 90, 205, 1)',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    borderColor: 'rgba(99, 102, 241, 1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: 'rgba(99, 102, 241, 1)',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
                 }]
             },
             options: {
@@ -1862,19 +1973,17 @@ function initNewCharts() {
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            color: getComputedStyle(document.body).getPropertyValue('--text-light')
-                        },
                         grid: {
-                            color: getComputedStyle(document.body).getPropertyValue('--gray')
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
                         }
                     },
                     x: {
-                        ticks: {
-                            color: getComputedStyle(document.body).getPropertyValue('--text-light')
-                        },
                         grid: {
-                            display: false
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        },
+                        ticks: {
                         }
                     }
                 },
@@ -1885,44 +1994,124 @@ function initNewCharts() {
                 }
             }
         });
+
+        // 🕒 Display total episodes watched this year
+        const totalEpisodesElement = document.getElementById('yearly-total-episodes');
+        if (totalEpisodesElement) {
+            totalEpisodesElement.textContent = `Total Eps (${selectedYear}): ${calculateTotalEpisodesThisYear()}`;
+        }
+
+        // 🌀 Auto-update chart + total when data changes
+        function updateEpisodesOverTimeDisplay(year = selectedYear) {
+            if (!episodesOverTimeChart) return;
+
+            episodesOverTimeChart.data.datasets[0].data = calculateEpisodesOverTime(year);
+            episodesOverTimeChart.data.datasets[0].label = `Episodes Watched (${year})`;
+            episodesOverTimeChart.update();
+
+            const totalEpisodes = calculateTotalEpisodesThisYear(year);
+            if (totalEpisodesElement) {
+                totalEpisodesElement.textContent = `Total Eps (${year}): ${totalEpisodes}`;
+            }
+        }
+
+        // Make updater globally accessible
+        window.updateEpisodesOverTimeDisplay = updateEpisodesOverTimeDisplay;
+    }
+}
+
+
+
+// === WATCH TIME BY MONTH CHART ===
+const watchTimeByMonthCtx = document.getElementById('watchTimeByMonthChart')?.getContext('2d');
+if (watchTimeByMonthCtx) {
+
+    // 🧮 Calculate monthly hours for the current year
+    function calculateWatchTimeByMonth() {
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const monthlyHours = Array(12).fill(0);
+
+        animeData.forEach(anime => {
+            if (anime.userStatus === "Completed" && anime.finishDate) {
+                const finishDate = new Date(anime.finishDate);
+                const finishYear = finishDate.getFullYear();
+                const monthIndex = finishDate.getMonth();
+
+                if (finishYear === currentYear && monthIndex >= 0 && monthIndex < 12) {
+                    if (anime.type === "Movie") {
+                        monthlyHours[monthIndex] += (anime.duration || 120) / 60;
+                    } else {
+                        monthlyHours[monthIndex] += ((anime.episodes || 0) * 20) / 60;
+                    }
+                }
+            }
+        });
+
+        // Round all month values to nearest whole number
+        return monthlyHours.map(h => Math.round(h));
     }
 
-    // Watch Time by Month Chart
-    const watchTimeByMonthCtx = document.getElementById('watchTimeByMonthChart')?.getContext('2d');
-    if (watchTimeByMonthCtx) {
-        watchTimeByMonthChart = new Chart(watchTimeByMonthCtx, {
-            type: 'line',
-            data: {
-                labels: calculateMonthlyLabels(),
-                datasets: [{
-                    label: 'Watch Time (Hours)',
-                    data: calculateWatchTimeByMonth(),
-                    backgroundColor: 'rgba(32, 178, 170, 0.1)',
-                    borderColor: 'rgba(32, 178, 170, 1)',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true
+    // 🧮 Calculate total hours for the current year
+    function calculateTotalHoursThisYear() {
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        let totalHours = 0;
+
+        animeData.forEach(anime => {
+            if (anime.userStatus === "Completed" && anime.finishDate) {
+                const finishDate = new Date(anime.finishDate);
+                if (finishDate.getFullYear() === currentYear) {
+                    if (anime.type === "Movie") {
+                        totalHours += (anime.duration || 120) / 60;
+                    } else {
+                        totalHours += ((anime.episodes || 0) * 20) / 60;
+                    }
+                }
+            }
+        });
+
+        // ✅ Round to nearest whole number (no decimals)
+        return Math.round(totalHours);
+    }
+
+    // 🎨 Create chart
+    watchTimeByMonthChart = new Chart(watchTimeByMonthCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+                label: 'Watch Time (Hours)',
+                data: calculateWatchTimeByMonth(),
+                backgroundColor: 'rgba(106, 90, 205, 0.7)',
+                    borderColor: 'rgba(99, 102, 241, 1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: false,
+                    pointBackgroundColor: 'rgba(99, 102, 241, 1)',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
                 }]
-            },
-            options: {
+        },
+         options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            color: getComputedStyle(document.body).getPropertyValue('--text-light')
-                        },
                         grid: {
-                            color: getComputedStyle(document.body).getPropertyValue('--gray')
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
                         }
                     },
                     x: {
-                        ticks: {
-                            color: getComputedStyle(document.body).getPropertyValue('--text-light')
-                        },
                         grid: {
-                            display: false
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        },
+                        ticks: {
                         }
                     }
                 },
@@ -1933,130 +2122,152 @@ function initNewCharts() {
                 }
             }
         });
+
+    // 🕒 Update total hours display
+    const totalHoursElement = document.getElementById('monthly-total-hours');
+    if (totalHoursElement) {
+        totalHoursElement.textContent = `Total Hrs (2025): ${calculateTotalHoursThisYear()}`;
     }
 
-    // Average Score by Genre Chart
-    const avgScoreByGenreCtx = document.getElementById('avgScoreByGenreChart')?.getContext('2d');
-    if (avgScoreByGenreCtx) {
-        const genreScores = {};
+    // 🌀 Auto-update when data changes
+    function updateWatchTimeDisplay() {
+        if (!watchTimeByMonthChart) return;
 
-        animeData.forEach(anime => {
-            if (anime.genres && anime.score) {
-                anime.genres.forEach(g => {
-                    if (!genreScores[g]) genreScores[g] = { total: 0, count: 0 };
-                    genreScores[g].total += anime.score;
-                    genreScores[g].count++;
-                });
-            }
-        });
+        watchTimeByMonthChart.data.datasets[0].data = calculateWatchTimeByMonth();
+        watchTimeByMonthChart.update();
 
-        const avgScores = Object.keys(genreScores).map(g => (genreScores[g].total / genreScores[g].count).toFixed(1));
-
-        new Chart(avgScoreByGenreCtx, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(genreScores),
-                datasets: [{
-                    label: 'Average Score',
-                    data: avgScores,
-                    backgroundColor: 'rgba(106, 90, 205, 0.7)',
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: 'y',
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        max: 10,
-                        ticks: {
-                            color: getComputedStyle(document.body).getPropertyValue('--text-light')
-                        },
-                        grid: {
-                            color: getComputedStyle(document.body).getPropertyValue('--gray')
-                        }
-                    },
-                    y: {
-                        ticks: {
-                            color: getComputedStyle(document.body).getPropertyValue('--text-light')
-                        }
-                    }
-                }
-            }
-        });
+        const totalHours = calculateTotalHoursThisYear();
+        if (totalHoursElement) {
+            totalHoursElement.textContent = `Total Hrs: ${totalHours}`;
+        }
     }
 
-    // Completion Rate by Year Chart
-    const completionRateCtx = document.getElementById('completionRateByYearChart')?.getContext('2d');
-    if (completionRateCtx) {
-        // Collect data
-        const yearStats = {};
+    // Make available globally for reuse
+    window.updateWatchTimeDisplay = updateWatchTimeDisplay;
+}
 
-        animeData.forEach(anime => {
-            if (anime.finishDate) {
-                const year = new Date(anime.finishDate).getFullYear();
-                if (!yearStats[year]) yearStats[year] = { completed: 0, total: 0 };
-                yearStats[year].total++;
-                if (anime.userStatus === 'Completed') {
-                    yearStats[year].completed++;
-                }
-            }
-        });
 
-        const years = Object.keys(yearStats).sort();
-        const completionRates = years.map(y => {
-            const { completed, total } = yearStats[y];
-            return ((completed / total) * 100).toFixed(1);
-        });
+// Average Score by Genre Chart
+const avgScoreByGenreCtx = document.getElementById('avgScoreByGenreChart')?.getContext('2d');
+if (avgScoreByGenreCtx) {
+    const genreScores = {};
 
-        // Create chart
-        new Chart(completionRateCtx, {
-            type: 'bar',
-            data: {
-                labels: years,
-                datasets: [{
-                    label: 'Completion Rate (%)',
-                    data: completionRates,
-                    backgroundColor: 'rgba(106, 90, 205, 0.7)',
-                    borderColor: 'rgba(106, 90, 205, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100,
-                        title: {
-                            display: true,
-                            text: 'Completion Rate (%)',
-                            color: '#aaa'
-                        },
-                        ticks: {
-                            color: getComputedStyle(document.body).getPropertyValue('--text-light')
-                        },
-                        grid: {
-                            color: getComputedStyle(document.body).getPropertyValue('--gray')
-                        }
+    animeData.forEach(anime => {
+        if (anime.genres && anime.score) {
+            anime.genres.forEach(g => {
+                if (!genreScores[g]) genreScores[g] = { total: 0, count: 0 };
+                genreScores[g].total += anime.score;
+                genreScores[g].count++;
+            });
+        }
+    });
+
+    const avgScores = Object.keys(genreScores).map(g => (genreScores[g].total / genreScores[g].count).toFixed(1));
+
+    new Chart(avgScoreByGenreCtx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(genreScores),
+            datasets: [{
+                label: 'Average Score',
+                data: avgScores,
+                backgroundColor: 'rgba(106, 90, 205, 0.7)',
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    max: 10,
+                    ticks: {
+                        color: getComputedStyle(document.body).getPropertyValue('--text-light')
                     },
-                    x: {
-                        ticks: {
-                            color: getComputedStyle(document.body).getPropertyValue('--text-light')
-                        },
-                        grid: {
-                            display: false
-                        }
+                    grid: {
+                        color: getComputedStyle(document.body).getPropertyValue('--gray')
                     }
                 },
-                plugins: {
-                    legend: { display: false }
+                y: {
+                    ticks: {
+                        color: getComputedStyle(document.body).getPropertyValue('--text-light')
+                    }
                 }
             }
-        });
-    }
+        }
+    });
+}
+
+// Completion Rate by Year Chart
+const completionRateCtx = document.getElementById('completionRateByYearChart')?.getContext('2d');
+if (completionRateCtx) {
+    // Collect data
+    const yearStats = {};
+
+    animeData.forEach(anime => {
+        if (anime.finishDate) {
+            const year = new Date(anime.finishDate).getFullYear();
+            if (!yearStats[year]) yearStats[year] = { completed: 0, total: 0 };
+            yearStats[year].total++;
+            if (anime.userStatus === 'Completed') {
+                yearStats[year].completed++;
+            }
+        }
+    });
+
+    const years = Object.keys(yearStats).sort();
+    const completionRates = years.map(y => {
+        const { completed, total } = yearStats[y];
+        return ((completed / total) * 100).toFixed(1);
+    });
+
+    // Create chart
+    new Chart(completionRateCtx, {
+        type: 'bar',
+        data: {
+            labels: years,
+            datasets: [{
+                label: 'Completion Rate (%)',
+                data: completionRates,
+                backgroundColor: 'rgba(106, 90, 205, 0.7)',
+                borderColor: 'rgba(106, 90, 205, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Completion Rate (%)',
+                        color: '#aaa'
+                    },
+                    ticks: {
+                        color: getComputedStyle(document.body).getPropertyValue('--text-light')
+                    },
+                    grid: {
+                        color: getComputedStyle(document.body).getPropertyValue('--gray')
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: getComputedStyle(document.body).getPropertyValue('--text-light')
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
 }
 
 // Calculate monthly labels for charts
@@ -2363,15 +2574,20 @@ function updateSidebarUserInfo() {
     const sidebarUsername = document.querySelector('.sidebar-username');
     const sidebarUserStats = document.querySelector('.sidebar-user-stats');
 
-    // Get user data from localStorage
+    // 🧠 Get user data
     const savedName = localStorage.getItem('username') || 'AnimeFan';
-    const savedAvatar = localStorage.getItem('userAvatar') || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(savedName) + '&background=6a5acd&color=fff';
+    const savedAvatar =
+        localStorage.getItem('userAvatar') ||
+        'https://ui-avatars.com/api/?name=' +
+        encodeURIComponent(savedName) +
+        '&background=6a5acd&color=fff';
 
-    // Calculate stats from animeData
+    // 🧮 Calculate totals
     const totalAnime = animeData.length;
     const totalHours = calculateTotalHours();
+    const totalEpisodes = calculateTotalEpisodes();
 
-    // Update sidebar elements
+    // 🖼️ Update sidebar info
     if (sidebarAvatar) {
         sidebarAvatar.src = savedAvatar;
         sidebarAvatar.alt = savedName;
@@ -2388,40 +2604,86 @@ function updateSidebarUserInfo() {
                 <span class="stat-label">Anime</span>
             </div>
             <div class="stat-divider"></div>
-            <div class="stat-item">
-<span class="stat-number">${formatNumberShort(totalHours)}</span>
-                <span class="stat-label">Hrs</span>
+            <div class="stat-item" id="toggleStat">
+                <span class="stat-number" id="toggleNumber" title="${totalHours.toLocaleString()}">
+                    ${formatNumberShort(totalHours)}
+                </span>
+                <span class="stat-label" id="toggleLabel">Hrs</span>
             </div>
         `;
     }
+
+    // 🌀 Animate + hover reveal
+    const numberEl = document.getElementById('toggleNumber');
+    const labelEl = document.getElementById('toggleLabel');
+    let showing = 'hours';
+
+    if (numberEl && labelEl) {
+        setInterval(() => {
+            numberEl.classList.add('fade-out');
+            labelEl.classList.add('fade-out');
+
+            setTimeout(() => {
+                if (showing === 'hours') {
+                    numberEl.textContent = formatNumberShort(totalEpisodes);
+                    numberEl.title = totalEpisodes.toLocaleString(); // show full number on hover
+                    labelEl.textContent = 'Eps';
+                    showing = 'episodes';
+                } else {
+                    numberEl.textContent = formatNumberShort(totalHours);
+                    numberEl.title = totalHours.toLocaleString();
+                    labelEl.textContent = 'Hrs';
+                    showing = 'hours';
+                }
+
+                numberEl.classList.remove('fade-out');
+                labelEl.classList.remove('fade-out');
+                numberEl.classList.add('fade-in');
+                labelEl.classList.add('fade-in');
+
+                setTimeout(() => {
+                    numberEl.classList.remove('fade-in');
+                    labelEl.classList.remove('fade-in');
+                }, 400);
+            }, 400);
+        }, 15000);
+    }
 }
 
-// Format numbers like 1.3k, 2.5M, etc.
+// 🧮 Calculate total episodes
+function calculateTotalEpisodes() {
+    let total = 0;
+    animeData.forEach(anime => {
+        const eps = anime.progress || anime.episodes || 0;
+        total += eps;
+    });
+    return total;
+}
+
+// 🧮 Calculate total hours (same logic)
+function calculateTotalHours() {
+    let totalMinutes = 0;
+    animeData.forEach(anime => {
+        if (anime.type === 'Movie') {
+            totalMinutes += anime.duration || 120;
+        } else {
+            const eps = anime.progress || anime.episodes || 0;
+            const epDur = anime.duration || 20;
+            totalMinutes += eps * epDur;
+        }
+    });
+    return Math.round(totalMinutes / 60);
+}
+
+// 🔢 Short number format (1.3k → 1300)
 function formatNumberShort(num) {
-    if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
-    if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'k';
+    if (num >= 1_000_000)
+        return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (num >= 1_000)
+        return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'k';
     return num.toString();
 }
 
-// Enhanced calculateTotalHours function
-function calculateTotalHours() {
-    let totalMinutes = 0;
-
-    animeData.forEach(anime => {
-        if (anime.type === 'Movie') {
-            // For movies, use the duration directly
-            totalMinutes += anime.duration || 0;
-        } else {
-            // For TV series, calculate based on episodes watched
-            const episodesWatched = anime.progress || 0;
-            const episodeDuration = anime.duration || 20; // Default 20 minutes per episode
-            totalMinutes += episodesWatched * episodeDuration;
-        }
-    });
-
-    // Convert minutes to hours and round
-    return Math.round(totalMinutes / 60);
-}
 // Monthly anime counter
 function updateTotalAnimeCountAllMonths() {
     const now = new Date();

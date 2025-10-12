@@ -50,24 +50,21 @@
         <!-- User Profile -->
         <div class="sidebar-user">
             <div class="user-avatar-container">
-                <img src="https://ui-avatars.com/api/?name=Anime+User&background=6a5acd&color=fff" alt="User" class="sidebar-avatar">
+                <img src="https://ui-avatars.com/api/?name=Anime+User&background=6a5acd&color=fff" alt="User"
+                    class="sidebar-avatar">
                 <div class="online-status"></div>
             </div>
             <div class="sidebar-user-info">
                 <div class="sidebar-username">Loading...</div>
                 <div class="sidebar-user-stats">
                     <div class="stat-item">
-                        <span class="stat-number">0</span>
-                        <span class="stat-label">Anime</span>
-                    </div>
-                    <div class="stat-divider"></div>
-                    <div class="stat-item">
-                        <span class="stat-number">0</span>
-                        <span class="stat-label">Hrs</span>
+                        <span class="stat-number" id="statNumber">0</span>
+                        <span class="stat-label" id="statLabel">Anime</span>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 
     <!-- Main Content -->
@@ -104,7 +101,7 @@
                         <div class="stat-header">
                             <div>
                                 <div class="stat-value" id="completed-count">0</div>
-                                <div class="stat-label">Completed</div>
+                                <div class="stat-label">Total Completed</div>
                                 <div class="stat-change" id="completed-change"></div>
                             </div>
                             <div class="stat-icon success">
@@ -286,9 +283,9 @@
                             <option value="2028">2028</option>
                         </select>
                         <div class="anime-counter">
-                            <i class="fas fa-film"></i>
                             <span id="anime-count">Total Anime: 0</span>
                         </div>
+
                     </div>
                 </div>
 
@@ -298,7 +295,6 @@
                         <table class="anime-table">
                             <thead>
                                 <tr>
-                                    <th>Cover</th>
                                     <th>Title</th>
                                     <th>Type</th>
                                     <th>Progress</th>
@@ -350,6 +346,9 @@
                     <div class="chart-card fade-in">
                         <div class="chart-header">
                             <div class="chart-title">Watch Time by Month</div>
+                            <div class="anime-counter">
+                                <span id="monthly-total-hours">Total Hrs: 0</span>
+                            </div>
                         </div>
                         <div class="chart-container">
                             <canvas id="watchTimeByMonthChart"></canvas>
@@ -403,7 +402,10 @@
 
                     <div class="chart-card fade-in">
                         <div class="chart-header">
-                            <div class="chart-title">Episodes Watched Over Time</div>
+                            <div class="chart-title">Episodes By Month</div>
+                            <div class="anime-counter">
+                                <span id="yearly-total-episodes">Total Eps: 0</span>
+                            </div>
                         </div>
                         <div class="chart-container">
                             <canvas id="episodesOverTimeChart"></canvas>
