@@ -595,9 +595,6 @@
      height: 100%;
  }
 
-
-
-
  /* Recent Activity */
  .activity-card {
      background: var(--card-bg);
@@ -3401,3 +3398,35 @@
          background-position: -200% 0;
      }
  }
+
+ /* === Mobile Menu Button === */
+.mobile-menu-toggle {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 200;
+  background: var(--primary);
+  color: #fff;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: var(--card-shadow);
+}
+
+.mobile-menu-toggle i {
+  font-size: 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+}

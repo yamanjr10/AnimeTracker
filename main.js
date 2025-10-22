@@ -264,38 +264,43 @@ document.addEventListener('DOMContentLoaded', function () {
     initSettings();
 
     // Mobile menu functionality
-    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-    const sidebar = document.querySelector('.sidebar');
+    document.addEventListener('DOMContentLoaded', () => {
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const sidebar = document.querySelector('.sidebar');
 
-    if (mobileMenuToggle) {
-        mobileMenuToggle.addEventListener('click', function () {
+        if (!mobileMenuToggle || !sidebar) return;
+
+        // Toggle sidebar visibility
+        mobileMenuToggle.addEventListener('click', (e) => {
+            e.stopPropagation(); // prevent closing immediately
             sidebar.classList.toggle('mobile-open');
         });
-    }
 
-    if (window.innerWidth <= 768) {
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', function () {
+        // Close sidebar when clicking a menu item
+        sidebar.querySelectorAll('.menu-item').forEach((item) => {
+            item.addEventListener('click', () => {
                 sidebar.classList.remove('mobile-open');
             });
         });
-    }
 
-    document.addEventListener('click', function (event) {
-        if (
-            window.innerWidth <= 768 &&
-            sidebar.classList.contains('mobile-open') &&
-            !sidebar.contains(event.target) &&
-            !mobileMenuToggle.contains(event.target)
-        ) {
-            sidebar.classList.remove('mobile-open');
-        }
-    });
+        // Close sidebar when clicking outside it
+        document.addEventListener('click', (e) => {
+            if (
+                window.innerWidth <= 768 &&
+                sidebar.classList.contains('mobile-open') &&
+                !sidebar.contains(e.target) &&
+                !mobileMenuToggle.contains(e.target)
+            ) {
+                sidebar.classList.remove('mobile-open');
+            }
+        });
 
-    window.addEventListener('resize', function () {
-        if (window.innerWidth > 768) {
-            sidebar.classList.remove('mobile-open');
-        }
+        // Reset sidebar state on resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('mobile-open');
+            }
+        });
     });
 
     // Reset filters AFTER everything loads
