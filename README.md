@@ -1,8 +1,6 @@
 <div align="center">
-🌸 AnimeTracker
-
-🎬 Track your anime journey — beautifully and efficiently.
-A minimal yet powerful anime-tracking web app built with HTML, CSS, and JavaScript.
+🌸 AnimeTracker 🌸
+Track your anime journey beautifully and effortlessly.
 
 
 
@@ -12,66 +10,93 @@ A minimal yet powerful anime-tracking web app built with HTML, CSS, and JavaScri
 
 
 </div>
-✨ Overview
+🚀 Project Overview
 
-AnimeTracker helps you keep track of all the anime you watch — monthly and yearly — in a clean, user-friendly interface.
-It’s lightweight, fast, and open source. Perfect for anime lovers who like staying organized!
+AnimeTracker is your personal companion for managing your anime-watching journey.
+Effortlessly keep tabs on your monthly and yearly anime records, giving you a clear view of your progress and patterns.
+The first version focuses on core functionality — but new features are on the way to make your experience even more powerful!
 
-🔍 Features
-
-✅ Track anime by month and year
-✅ Beautifully animated and responsive UI
-✅ Minimal design with focus on usability
-✅ Built entirely with Vanilla JavaScript (no frameworks)
-✅ Easily expandable for new features (statistics, filters, etc.)
-
+📊 Key Details
+<div align="center">
+Detail	Info
+🕒 Last Commit	Automatically updated via badge above
+💻 Most Used Language	JavaScript (~56.5%)
+🌈 Languages Used	JavaScript (56.5%) · CSS (28.6%) · HTML (14.9%)
+</div>
 🗂️ Project Structure
-AnimeTracker/
-├── index.html      # Main UI
-├── style.css       # Styles and layout
-├── main.js         # Core logic
-└── extras.js       # Utility functions
+.
+├── extras.js
+├── index.html
+├── main.js
+└── style.css
 
-⚙️ Getting Started
-1. Clone the repository
+✅ Getting Started
+
+Fork the repository
+
+Clone your fork
+
 git clone https://github.com/yamanjr10/AnimeTracker.git
 
-2. Open in your browser
 
-Simply open index.html — no setup required!
-Or run a local server:
-
-npx serve .
-
-3. Start tracking your anime! 🌸
-🧠 Tech Stack
-Category	Technology
-Frontend	HTML5, CSS3, JavaScript
-Design	Custom CSS Animations
-Tools	Git, VS Code
-📊 GitHub Insights
-Metric	Info
-🔤 Most Used Language	JavaScript (≈56.5%)
-🕒 Last Commit	
-
-📦 Repo Size	
-💖 Contributing
-
-Want to make AnimeTracker even better?
-Feel free to fork, make improvements, and open a pull request!
+Create a new branch for your feature
 
 git checkout -b feature/your-feature
-git commit -m "Add a cool new feature"
+
+
+Commit your changes
+
+git commit -am "Add some feature"
+
+
+Push to your branch
+
 git push origin feature/your-feature
 
-📜 License
 
-This project is licensed under the MIT License
-.
+Open a Pull Request — and you’re good to go! 🎉
+
+💡 Please make sure your code follows the project’s style and is well-tested.
+
+🌟 Features
+
+📅 Track anime watched monthly
+
+📆 Track anime watched yearly
+
+💻 Clean, responsive UI built with HTML / CSS / JS
+
+⚙️ Lightweight and extendable
+
+📊 Ready for upcoming features — exporting, filtering, and analytics
+
+🛠️ Built With
+<div align="center">
+Tech	Description
+💛 JavaScript	Core logic & interactivity
+🎨 CSS3	Styling & animations
+🧱 HTML5	Structure & layout
+</div>
+🤝 Contributing
+
+Contributions are always welcome!
+Whether you’re fixing bugs, adding new features, or improving docs — your help is appreciated.
+
+git checkout -b feature/your-feature
+git commit -m "Add something awesome"
+git push origin feature/your-feature
+
+
+Then, open a pull request 💬
+
+📄 License
+
+This project is licensed under the MIT License — see the LICENSE
+ file for details.
 
 <div align="center">
 
-⭐ Star this repo if you love anime and clean code! ⭐
-Made with 💗 by yamanjr10
+⭐ If you like AnimeTracker, give it a star on GitHub! ⭐
+Made with 💖 by yamanjr10
 
 </div>
