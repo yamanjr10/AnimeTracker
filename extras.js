@@ -144,24 +144,3 @@ function processNextToast() {
   oldShowToast(msg, type);
   setTimeout(processNextToast, 2000);
 }
-
-// --- Theme Customizer ---
-document.addEventListener('DOMContentLoaded', () => {
-  const settingsPage = document.getElementById('settings-page');
-  if (!settingsPage) return;
-
-  const container = document.createElement('div');
-  container.innerHTML = `
-    <div class="form-group">
-      <label for="themeColor">Accent Color</label>
-      <input type="color" id="themeColor" value="${localStorage.getItem('themeColor') || '#6a5acd'}">
-    </div>
-  `;
-  settingsPage.appendChild(container);
-
-  document.getElementById('themeColor').addEventListener('input', e => {
-    const color = e.target.value;
-    document.documentElement.style.setProperty('--primary', color);
-    localStorage.setItem('themeColor', color);
-  });
-});

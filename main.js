@@ -252,7 +252,10 @@ document.addEventListener('DOMContentLoaded', function () {
         updateAnimeDisplay();
     });
 
-    document.getElementById('sortFilter').addEventListener('change', updateAnimeDisplay);
+const sortFilter = document.getElementById('sortFilter');
+if (sortFilter) {
+    sortFilter.addEventListener('change', updateAnimeDisplay);
+}
 
     // Initialize with sample data if empty
     if (animeData.length === 0) {
@@ -302,19 +305,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
-
-    // Reset filters AFTER everything loads
-    setTimeout(() => {
-        const statusEl = document.getElementById('statusFilter');
-        const monthEl = document.getElementById('monthFilter');
-        const yearEl = document.getElementById('yearFilter');
-
-        if (statusEl) statusEl.value = 'all';
-        if (monthEl) monthEl.value = 'all';
-        if (yearEl) yearEl.value = 'all';
-
-        updateAnimeDisplay();
-    }, 300);
 
     // Check for updates periodically (every 6 hours)
     setInterval(checkForUserUpdates, 6 * 60 * 60 * 1000);
@@ -2048,43 +2038,57 @@ function calculateScoreAnalysis() {
 
 // Initialize additional charts
 function initStatisticsCharts() {
-    // Completion Chart
-    const completionCtx = document.getElementById('completionChart')?.getContext('2d');
-    if (completionCtx) {
-        completionChart = new Chart(completionCtx, {
-            type: 'bar',
-            data: {
-                labels: ['2023', '2024', '2025', '2026', '2027', '2028'],
-                datasets: [{
-                    label: 'Anime Completed',
-                    data: calculateYearlyCompletion(),
-                    backgroundColor: '#48bb78'
-                }]
+  // --- Completion Chart (Safe Destroy Before Recreate) ---
+let completionChart; // store instance globally
+
+function renderCompletionChart() {
+const completionCanvas = document.getElementById('completionChart');
+if (!completionCanvas) return;
+
+const completionCtx = completionCanvas.getContext('2d');
+
+// ✅ Destroy previous chart instance before reusing the canvas
+if (completionChart) {
+    completionChart.destroy();
+}
+
+completionChart = new Chart(completionCtx, {
+    type: 'bar',
+    data: {
+        labels: ['2023', '2024', '2025', '2026', '2027', '2028'],
+        datasets: [{
+            label: 'Anime Completed',
+            data: calculateYearlyCompletion(),
+            backgroundColor: '#48bb78'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.05)'
+                }
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
+            x: {
+                grid: {
+                    display: false
                 }
             }
-        });
+        }
     }
+});
+}
+
+// ✅ Call this instead of creating the chart directly
+renderCompletionChart();
 
     // Score Distribution Chart
     const scoreDistributionCtx = document.getElementById('scoreDistributionChart')?.getContext('2d');
@@ -3611,135 +3615,254 @@ window.addEventListener('storage', () => {
 });
 
 /* ============================================================
-   🔄 AUTO-SAVE USER ANIME DATA TO LOCALSTORAGE
-   ============================================================ */
-(function setupAnimeAutoSave() {
-    // Ensure animeData exists
-    if (typeof animeData === 'undefined') return;
+🔄 AUTO-SAVE + PERSISTENT JSON BACKUP (Edge / Chrome)
+============================================================ */
 
-    // Auto-save whenever animeData changes
+(async function setupPersistentAutoBackup() {
+    if (typeof animeData === "undefined") return;
+
+    // --- IndexedDB helper ---
+    const DB_NAME = "AnimeTrackerDB";
+    const STORE_NAME = "backupHandleStore";
+
+    async function openDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, 1);
+            request.onupgradeneeded = () => {
+                request.result.createObjectStore(STORE_NAME);
+            };
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async function saveHandle(handle) {
+        const db = await openDB();
+        const tx = db.transaction(STORE_NAME, "readwrite");
+        tx.objectStore(STORE_NAME).put(handle, "backupHandle");
+        await tx.complete;
+        db.close();
+    }
+
+    async function loadHandle() {
+        const db = await openDB();
+        return new Promise((resolve) => {
+            const tx = db.transaction(STORE_NAME, "readonly");
+            const req = tx.objectStore(STORE_NAME).get("backupHandle");
+            req.onsuccess = () => resolve(req.result || null);
+            req.onerror = () => resolve(null);
+            tx.oncomplete = () => db.close();
+        });
+    }
+
+    async function deleteHandle() {
+        const db = await openDB();
+        const tx = db.transaction(STORE_NAME, "readwrite");
+        tx.objectStore(STORE_NAME).delete("backupHandle");
+        await tx.complete;
+        db.close();
+    }
+
+    // --- Backup logic ---
+    let backupHandle = await loadHandle();
+    let saveTimeout = null;
+    const SAVE_DELAY = 800; // debounce delay
+
+    async function saveBackup() {
+        if (!backupHandle) return;
+        try {
+            const perm = await backupHandle.queryPermission({ mode: "readwrite" });
+            if (perm === "denied") {
+                console.warn("Backup permission denied.");
+                return;
+            }
+
+            const writable = await backupHandle.createWritable();
+            await writable.write(JSON.stringify(animeData, null, 2));
+            await writable.close();
+
+            console.log("✅ JSON backup updated successfully.");
+            const statusEl = document.getElementById("backupStatus");
+            if (statusEl)
+                statusEl.textContent = "✅ Auto backup updated at " + new Date().toLocaleTimeString();
+        } catch (err) {
+            console.error("❌ Error saving backup:", err);
+        }
+    }
+
+    // Debounced save trigger
+    function triggerBackupSave() {
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(saveBackup, SAVE_DELAY);
+    }
+
+    // Create Proxy wrapper for auto-save to localStorage + backup file
     const animeDataProxy = new Proxy(animeData, {
         set(target, prop, value) {
             target[prop] = value;
-            localStorage.setItem('animeData', JSON.stringify(animeData));
-            console.log(`Auto-saved after property change: ${prop}`);
+            localStorage.setItem("animeData", JSON.stringify(animeData));
+            triggerBackupSave();
             return true;
         },
         deleteProperty(target, prop) {
             delete target[prop];
-            localStorage.setItem('animeData', JSON.stringify(animeData));
-            console.log(`Auto-saved after deletion: ${prop}`);
+            localStorage.setItem("animeData", JSON.stringify(animeData));
+            triggerBackupSave();
             return true;
-        }
+        },
     });
 
-    // Replace global animeData reference
     animeData = animeDataProxy;
 
-    // Fallback: periodic save every 3 seconds in case of direct replacements
-    let lastSaved = JSON.stringify(animeData);
-    setInterval(() => {
-        const current = JSON.stringify(animeData);
-        if (current !== lastSaved) {
-            localStorage.setItem('animeData', current);
-            lastSaved = current;
-            console.log('Auto-saved animeData (interval)');
-        }
-    }, 3000);
-
-    console.log('✅ Auto-save system active: All animeData changes will be saved automatically.');
-})();
-
-/* ============================================================
-   💾 AUTO JSON BACKUP + SETTINGS BUTTON
-   ============================================================ */
-(function setupAutoJsonBackup() {
-    if (typeof animeData === 'undefined') return;
-
-    let backupHandle = null;
-    const supportsFSAPI = 'showSaveFilePicker' in window;
-
-    async function saveBackupFile(data) {
-        const jsonData = JSON.stringify(data, null, 2);
-        const blob = new Blob([jsonData], { type: 'application/json' });
-
-        // If user has selected a persistent file
-        if (backupHandle) {
-            try {
-                const writable = await backupHandle.createWritable();
-                await writable.write(blob);
-                await writable.close();
-                console.log('[Backup] JSON file updated automatically.');
-                const statusEl = document.getElementById('backupStatus');
-                if (statusEl) statusEl.textContent = '✅ Auto backup updated at ' + new Date().toLocaleTimeString();
-                return;
-            } catch (err) {
-                console.warn('Could not update backup file:', err);
-            }
-        }
-
-        // Fallback: trigger download instead
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const filename = `AnimeTracker_AutoBackup_${timestamp}.json`;
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = filename;
-        link.click();
-        URL.revokeObjectURL(link.href);
-        console.log(`[Backup] Auto-exported as ${filename}`);
-        const statusEl = document.getElementById('backupStatus');
-        if (statusEl) statusEl.textContent = '📁 Auto-exported a new backup file';
-    }
-
-    // Ask user for file location (persistent)
-    async function requestBackupFileHandle() {
-        if (!supportsFSAPI) {
-            alert('Your browser does not support direct file saving. New backups will be downloaded automatically instead.');
+    // --- UI button for enabling backup (robust attach even if DOM already loaded) ---
+    function attachBackupButton() {
+        const enableBtn = document.getElementById("enableBackupBtn");
+        if (!enableBtn) {
+            console.warn("⚠️ enableBackupBtn not found yet. Retrying...");
+            setTimeout(attachBackupButton, 500);
             return;
         }
-        try {
-            backupHandle = await window.showSaveFilePicker({
-                suggestedName: 'MyAnimeList_Backup.json',
-                types: [{
-                    description: 'AnimeTracker JSON Backup',
-                    accept: { 'application/json': ['.json'] }
-                }]
-            });
-            localStorage.setItem('backupFileHandle', JSON.stringify(await backupHandle.requestPermission()));
-            const statusEl = document.getElementById('backupStatus');
-            if (statusEl) statusEl.textContent = '✅ Auto backup enabled. File will update automatically.';
-            console.log('✅ Persistent backup file selected.');
-        } catch (err) {
-            console.warn('Backup file selection canceled:', err);
-            const statusEl = document.getElementById('backupStatus');
-            if (statusEl) statusEl.textContent = '⚠️ Backup not enabled.';
-        }
+
+        console.log("✅ Backup button found and ready.");
+        enableBtn.addEventListener("click", async () => {
+            console.log("🟢 Backup button clicked.");
+            try {
+                backupHandle = await window.showSaveFilePicker({
+                    suggestedName: "AnimeTracker_Backup.json",
+                    types: [{
+                        description: "AnimeTracker JSON Backup",
+                        accept: { "application/json": [".json"] },
+                    }],
+                });
+                await saveHandle(backupHandle);
+                console.log("✅ Backup file handle saved for future sessions.");
+                const statusEl = document.getElementById("backupStatus");
+                if (statusEl)
+                    statusEl.textContent = "✅ Auto backup enabled and file selected.";
+            } catch (err) {
+                console.warn("Backup setup canceled or failed:", err);
+                const statusEl = document.getElementById("backupStatus");
+                if (statusEl) statusEl.textContent = "⚠️ Backup not enabled.";
+            }
+        });
+
+
     }
 
-    // Attach button in Settings page
-    document.addEventListener('DOMContentLoaded', () => {
-        const enableBtn = document.getElementById('enableBackupBtn');
-        if (enableBtn) {
-            enableBtn.addEventListener('click', requestBackupFileHandle);
-        }
-    });
+    // Attach immediately if DOM ready, else wait
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", attachBackupButton);
+    } else {
+        attachBackupButton();
+    }
 
-    // Listen for all animeData saves (triggered by your Proxy auto-save)
-    const originalSetItem = localStorage.setItem;
-    localStorage.setItem = function (key, value) {
-        originalSetItem.apply(this, arguments);
-        if (key === 'animeData') {
-            try {
-                const parsed = JSON.parse(value);
-                saveBackupFile(parsed);
-            } catch (err) {
-                console.error('Auto-backup failed:', err);
-            }
-        }
-    };
 
-    console.log('💾 Auto JSON backup active — use the "Enable Auto Backup" button in Settings to save directly.');
+    // --- Watch for direct replacements or major changes ---
+    let lastSnapshot = JSON.stringify(animeData);
+    setInterval(() => {
+        const current = JSON.stringify(animeData);
+        if (current !== lastSnapshot) {
+            localStorage.setItem("animeData", current);
+            triggerBackupSave();
+            lastSnapshot = current;
+        }
+    }, 5000);
+
+    // --- Show status if backup was already enabled on reload ---
+    if (backupHandle) {
+        const statusEl = document.getElementById("backupStatus");
+        if (statusEl) {
+            statusEl.textContent = "✅ Auto backup enabled and file selected.";
+            statusEl.style.color = "limegreen";
+        }
+        console.log("🔁 Restored existing backup handle from IndexedDB.");
+    }
+
+    console.log("💾 Persistent auto-backup active (Edge/Chrome only).");
+
+
 })();
+
+// -----------------------------
+// Persistent filter restore
+// -----------------------------
+(function restoreFiltersFromLocalStorage() {
+    const mappings = [
+        { elId: 'statusFilter', storageKey: 'animeFilterStatus' },
+        { elId: 'monthFilter', storageKey: 'animeFilterMonth' },
+        { elId: 'yearFilter', storageKey: 'animeFilterYear' }
+    ];
+
+    // Try to restore immediately if elements exist, otherwise retry until they do
+    let attempts = 0;
+    const maxAttempts = 30;
+    const interval = setInterval(() => {
+        attempts++;
+        const allReady = mappings.every(m => document.getElementById(m.elId));
+        if (!allReady && attempts <= maxAttempts) return;
+
+        clearInterval(interval);
+
+        // Apply saved values (if any) and attach change listeners
+        mappings.forEach(({ elId, storageKey }) => {
+            const el = document.getElementById(elId);
+            if (!el) return;
+
+            const saved = localStorage.getItem(storageKey);
+            if (saved && el.value !== saved) {
+                el.value = saved;
+            }
+
+            // Ensure we save using the existing keys used elsewhere in the app
+            el.addEventListener('change', (e) => {
+                localStorage.setItem(storageKey, e.target.value);
+                if (typeof updateAnimeDisplay === 'function') updateAnimeDisplay();
+            });
+        });
+
+        // After restoring, refresh display so filters apply immediately
+        if (typeof updateAnimeDisplay === 'function') {
+            updateAnimeDisplay();
+        }
+    }, 200);
+})();
+
+// ============================================================
+// 👤 Persistent User Avatar (Corrected for .user-avatar)
+// ============================================================
+
+document.addEventListener("DOMContentLoaded", () => {
+    const avatarEl = document.querySelector(".user-avatar");
+    if (!avatarEl) return;
+
+    // 🔁 Restore saved avatar on page load
+    const savedAvatar = localStorage.getItem("userAvatar");
+    if (savedAvatar) {
+        avatarEl.src = savedAvatar;
+        console.log("✅ Restored saved avatar.");
+    } else {
+        console.log("ℹ️ No saved avatar found, using default.");
+    }
+
+    // 🖼️ Handle custom upload (if you add a hidden input)
+    const uploadInput = document.getElementById("avatarUpload");
+    if (uploadInput) {
+        uploadInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const dataURL = event.target.result;
+                avatarEl.src = dataURL;
+                localStorage.setItem("userAvatar", dataURL);
+                console.log("💾 Avatar updated and saved.");
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+});
+
 
 
 // Initialize the app with saved theme
