@@ -1,73 +1,77 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)  
-[![Last Commit](https://img.shields.io/github/last-commit/yamanjr10/AnimeTracker.svg)](https://github.com/yamanjr10/AnimeTracker/commits)  
-[![Languages](https://img.shields.io/github/languages/top/yamanjr10/AnimeTracker.svg)](https://github.com/yamanjr10/AnimeTracker)  
+<div align="center">
+🌸 AnimeTracker
 
-## 🚀 Project Overview  
-AnimeTracker is your personal companion for managing your anime-watching journey. Effortlessly keep tabs on your monthly and yearly anime record, providing a clear overview of your viewing habits and progress. While the initial version focuses on core tracking functionality, stay tuned for future enhancements and features designed to elevate your anime experience.
+🎬 Track your anime journey — beautifully and efficiently.
+A minimal yet powerful anime-tracking web app built with HTML, CSS, and JavaScript.
 
-## 📊 Key Details  
-- **Last Commit**: *(Automatically updated via badge above)*  
-- **Most Used Language**: JavaScript (~56.5%) :contentReference[oaicite:1]{index=1}  
-- **Languages Used**:  
-  - JavaScript ≈ 56.5% :contentReference[oaicite:2]{index=2}  
-  - CSS ≈ 28.6% :contentReference[oaicite:3]{index=3}  
-  - HTML ≈ 14.9% :contentReference[oaicite:4]{index=4}  
 
-## 🗂️ Project Structure  
+
+
+
+
+
+
+</div>
+✨ Overview
+
+AnimeTracker helps you keep track of all the anime you watch — monthly and yearly — in a clean, user-friendly interface.
+It’s lightweight, fast, and open source. Perfect for anime lovers who like staying organized!
+
+🔍 Features
+
+✅ Track anime by month and year
+✅ Beautifully animated and responsive UI
+✅ Minimal design with focus on usability
+✅ Built entirely with Vanilla JavaScript (no frameworks)
+✅ Easily expandable for new features (statistics, filters, etc.)
+
+🗂️ Project Structure
+AnimeTracker/
+├── index.html      # Main UI
+├── style.css       # Styles and layout
+├── main.js         # Core logic
+└── extras.js       # Utility functions
+
+⚙️ Getting Started
+1. Clone the repository
+git clone https://github.com/yamanjr10/AnimeTracker.git
+
+2. Open in your browser
+
+Simply open index.html — no setup required!
+Or run a local server:
+
+npx serve .
+
+3. Start tracking your anime! 🌸
+🧠 Tech Stack
+Category	Technology
+Frontend	HTML5, CSS3, JavaScript
+Design	Custom CSS Animations
+Tools	Git, VS Code
+📊 GitHub Insights
+Metric	Info
+🔤 Most Used Language	JavaScript (≈56.5%)
+🕒 Last Commit	
+
+📦 Repo Size	
+💖 Contributing
+
+Want to make AnimeTracker even better?
+Feel free to fork, make improvements, and open a pull request!
+
+git checkout -b feature/your-feature
+git commit -m "Add a cool new feature"
+git push origin feature/your-feature
+
+📜 License
+
+This project is licensed under the MIT License
 .
-├── extras.js
-├── index.html
-├── main.js
-└── style.css
 
-perl
-Copy code
-:contentReference[oaicite:5]{index=5}
+<div align="center">
 
-## ✅ Getting Started  
-1. Fork the repository.  
-2. Clone your fork:  
-   ```bash
-   git clone https://github.com/yamanjr10/AnimeTracker.git
-Create a new branch for your feature:
+⭐ Star this repo if you love anime and clean code! ⭐
+Made with 💗 by yamanjr10
 
-bash
-Copy code
-git checkout -b feature/your‐feature
-Commit your changes:
-
-bash
-Copy code
-git commit -am 'Add some feature'
-Push to your branch:
-
-bash
-Copy code
-git push origin feature/your‐feature
-Open a Pull Request.
-
-Please ensure your code follows the project’s style guidelines and includes tests where applicable.
-
-💡 Features
-Track anime watched monthly.
-
-Track anime watched yearly.
-
-Simple, responsive UI built using HTML / CSS / JavaScript.
-
-Ready for future features (exporting data, filtering by genre, statistics, etc.).
-
-🛠️ Built With
-JavaScript
-
-HTML5
-
-CSS3
-
-📌 Contributing
-Contributions are welcome! Whether you want to fix bugs, add features, or improve documentation—feel free to jump in. Check the Getting Started section above to start contributing.
-
-📄 License
-This project is licensed under the MIT License — see the LICENSE file for details.
-
-This README was generated with ❤️ for the AnimeTracker project by yamanjr10.
+</div>
